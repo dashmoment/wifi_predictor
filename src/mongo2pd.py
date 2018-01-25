@@ -42,10 +42,10 @@ devices_type = ['AP','STA']
 
 
 
-m = db.mongodb_api(user='ubuntu', pwd='ubuntu', collection="ProcessDataPair1070111new-2")
+m = db.mongodb_api(user='ubuntu', pwd='ubuntu', collection="ProcessDataPair1070112mid-5")
 found_data = m.find(ftype='many')
-output_folder = '../data/ProcessData1070110'
-output_file = 'training_data_nsmall_t1.h5'
+output_folder = '../data/ProcessData1070112'
+output_file = 'training_data_mid_5.h5'
 output_path = os.path.join(output_folder,output_file)
 
 if not os.path.isdir(output_folder):

@@ -148,10 +148,10 @@ data_dict = {   "data":{
 
 preprocess_config = {
         
-            'feature_type' : ["Busy(ms)", "Sigval"], 
+            'feature_type' : ["Busy(ms)", "Sigval", "Portion", "FCSError", "Rssi"], 
             'raw_data_type' : ['STA'], 
             'is_norm': True,
-            'is_fft' : True
+            'is_fft' : False
         
         }
 
@@ -163,14 +163,33 @@ label_config = {
         
         }
 
-train_data, train_label = generate_data_label_from_file('../data/ProcessData1070110/training_data_mid_t1.h5', preprocess_config, label_config)
-test_data, test_label = generate_data_label_from_file('../data/ProcessData1070110/testing_data_mid_t1.h5', preprocess_config, label_config)
+#train_data, train_label = generate_data_label_from_file('../data/ProcessData1070110/training_data_mid_t1.h5', preprocess_config, label_config)
+#test_data, test_label = generate_data_label_from_file('../data/ProcessData1070110/testing_data_mid_t1.h5', preprocess_config, label_config)
 
 #train_data, train_label = generate_data_label_from_file('../data/ProcessData1070110/training_data_nsmall_t1.h5', preprocess_config, label_config)
 #test_data, test_label = generate_data_label_from_file('../data/ProcessData1070110/testing_data_nsmall_t1.h5', preprocess_config, label_config)
 
 #train_data, train_label = generate_data_label_from_file('../data/ProcessData1070110/training_data_t1.h5', preprocess_config, label_config)
 #test_data, test_label = generate_data_label_from_file('../data/ProcessData1070110/testing_data_t1.h5', preprocess_config, label_config)
+
+path = '../data/ProcessData1070112/training_data_mid_'
+train_data = []
+train_label = []
+Ntraining_set = 4
+for n in range(Ntraining_set):
+    
+    filename = path + str(n+1) + '.h5'
+    tmp_data, tmp_label = generate_data_label_from_file(filename, preprocess_config, label_config)   
+    
+    if n == 0:
+        train_data = tmp_data
+        train_label = tmp_label
+    
+    else:
+        train_data = np.concatenate([train_data,tmp_data], axis=0)
+        train_label = np.concatenate([train_label,tmp_label], axis=0)
+
+test_data, test_label = generate_data_label_from_file('../data/ProcessData1070112/training_data_mid_5.h5', preprocess_config, label_config)    
 
 train_data = moving_average(train_data, 10, 1)
 train_label = moving_average(train_label, 10, 1)
@@ -208,7 +227,6 @@ xg_test_c_matrix = confusion_matrix(test_label_oh, xg_prediction_test)
 
 plot_importance(model)
 plt.show()
-
 
 
 
