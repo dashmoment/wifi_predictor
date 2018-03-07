@@ -34,19 +34,19 @@ for i in range(len(db_collections['collection'])):
     
     for j in range(db_collections['number'][i]):
         
+        
         if j==0:
             db_collection = db_collections['collection'][i] + '-ProcessData'
         else:
             db_collection = db_collections['collection'][i] + '-'+ str(j+1) + '-ProcessData'
-
+        
         mW = db.mongodb_api(user='ubuntu', pwd='ubuntu', database='wifi_diagnosis',collection=db_collection)
         fdata = mW.find(key_value = {}, ftype='many')
 
 
-
-    for i in range(len(fdata)):
-        AP_data.append(pd.Series(fdata[i]['AP']))
-        #tmp = pd.Series.transpose(tmp)
+        for k in range(len(fdata)):
+            AP_data.append(pd.Series(fdata[k]['AP']))
+            #tmp = pd.Series.transpose(tmp)
     
 AP_data = pd.concat(AP_data, axis=1).transpose()
 
