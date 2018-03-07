@@ -53,6 +53,7 @@ AP_data = pd.concat(AP_data, axis=1).transpose()
 
 #Drop data with no delay values 
 AP_data = AP_data[AP_data.astype(str)['Delay']!='[]'].reset_index(drop='True')
+AP_data = AP_data[AP_data.astype(str)['SS_Subval']!='[]'].reset_index(drop='True')
 
 
 delay_raw = []
