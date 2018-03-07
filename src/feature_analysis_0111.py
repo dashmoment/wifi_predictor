@@ -44,6 +44,8 @@ def preprocess_data(raw_data, kwarg):
     
         for i in range(len(feature_type)):
             
+            print(raw_data[dtype]['data'].keys())
+            
             tmp_data = raw_data[dtype]['data'][feature_type[i]]
             tmp_data = np.around(np.array(tmp_data).astype(np.float32), decimals=3)
             tmp_data = tmp_data.reshape(-1,np.shape(tmp_data)[-1])
@@ -66,7 +68,7 @@ def preprocess_data(raw_data, kwarg):
     return np.concatenate(data,0)
 
 
-def one_hot_label_generator(labels, divisions = [0,6,11,21]):
+def one_hot_label_generator(labels, divisions = [0,5,10,20]):
 
     def check_in_range(label, divisions):
 
@@ -86,7 +88,6 @@ def one_hot_label_generator(labels, divisions = [0,6,11,21]):
         if len(oh_label) != l_idx + 1:
             oh_label.append(len(divisions)-1)
 
-       
     return oh_label
 
 
@@ -102,23 +103,38 @@ def moving_average(data, period, steps):
     
     return np.array(avg_data)
 
+def moving_average_label(data, period, steps):
+    
+    avg_data = []
+    
+    for i in range(period,len(data), steps):
+      
+        cat_label = np.concatenate(data[i-period:i])
+        if len(cat_label) < 95:
+            avg_data.append(-10)
+        else:
+            avg_data.append(np.mean(cat_label))
+            
+            
+    
+    return np.array(avg_data)
+
+
 
 def generate_data_label_from_file(filename, preprocess_config, label_config):
     
     
-    train_label = []
+    #train_label = []
     
     h5data = pd.HDFStore(filename)
     raw_data= h5data["raw_data"]
     train_data = preprocess_data(raw_data ,preprocess_config)
     
-    for device in label_config['raw_data_type']:
-        
-        
+    #for device in label_config['raw_data_type']:
 
-        train_label.append(raw_data[device]['label'][label_config['label_feature']])
+        #train_label.append(raw_data[device]['label'][label_config['label_feature']])
     
-    train_label = np.array(train_label).reshape(-1,1)
+    train_label = np.array(raw_data['AP']['label'][label_config['label_feature']])
     
     return train_data, train_label
 
@@ -145,11 +161,35 @@ data_dict = {   "data":{
             }
 """
 
+"""
+data_dict = {   "data":{
+                    "Rcv":[],
+                    "Rx_bitrate":[],
+                    "Tx_bitrate":[],
+                    "SS_Sigval":[],
+                    "SS_Sigval_Std":[],
+                    "SS_Portion":[],
+                    "SS_Count":[],
+                    "SS_Rssi":[],
+                    "FCSError":[],
+                    "CRC-ERR":[],
+                    "LENGTH-ERR":[],
+                    "PHY-ERR":[]
+                },
+
+                "label":{
+                    "Ping_mean":[],
+                    #"Ping_std":[],
+                    "FER":[]
+                }
+                
+            }
+"""
 
 preprocess_config = {
         
-            'feature_type' : ["Busy(ms)", "Sigval", "Portion", "FCSError", "Rssi"], 
-            'raw_data_type' : ['STA'], 
+            'feature_type' : ['SS_Sigval_Std', 'SS_Sigval', 'SS_Portion', 'FCSError', 'Rcv'], 
+            'raw_data_type' : ['AP'], 
             'is_norm': True,
             'is_fft' : False
         
@@ -158,56 +198,68 @@ preprocess_config = {
 label_config = {
         
             'label_feature' : 'Ping_mean', 
-            'raw_data_type' : ['STA'], 
+            'raw_data_type' : ['AP'], 
             
         
         }
 
-#train_data, train_label = generate_data_label_from_file('../data/ProcessData1070110/training_data_mid_t1.h5', preprocess_config, label_config)
-#test_data, test_label = generate_data_label_from_file('../data/ProcessData1070110/testing_data_mid_t1.h5', preprocess_config, label_config)
-
-#train_data, train_label = generate_data_label_from_file('../data/ProcessData1070110/training_data_nsmall_t1.h5', preprocess_config, label_config)
-#test_data, test_label = generate_data_label_from_file('../data/ProcessData1070110/testing_data_nsmall_t1.h5', preprocess_config, label_config)
-
-#train_data, train_label = generate_data_label_from_file('../data/ProcessData1070110/training_data_t1.h5', preprocess_config, label_config)
-#test_data, test_label = generate_data_label_from_file('../data/ProcessData1070110/testing_data_t1.h5', preprocess_config, label_config)
-
-path = '../data/ProcessData1070112/training_data_mid_'
-train_data = []
-train_label = []
-Ntraining_set = 4
-for n in range(Ntraining_set):
+def concat_data_label(data_path, file_list,preprocess_config, label_config):
     
-    filename = path + str(n+1) + '.h5'
-    tmp_data, tmp_label = generate_data_label_from_file(filename, preprocess_config, label_config)   
+    data = []
+    label = []
     
-    if n == 0:
-        train_data = tmp_data
-        train_label = tmp_label
-    
-    else:
-        train_data = np.concatenate([train_data,tmp_data], axis=0)
-        train_label = np.concatenate([train_label,tmp_label], axis=0)
+    for f in file_list:
+        
+        fpath = os.path.join(data_path, f+'.h5')
+        tmp_data, tmp_label = generate_data_label_from_file(fpath, preprocess_config, label_config) 
+        
+        if len(data) == 0:
+            
+            data = tmp_data
+            label = tmp_label
+        else:
+            data = np.concatenate([data,tmp_data], axis=0)
+            label = np.concatenate([label,tmp_label], axis=0)
+            
+    return data, label
+        
+"""
+collections = ['1070202small-t1', '1070202small-t1-2', 
+               '1070201small-t1', '1070201small-t1-2',
+               '1070201small-t3', '1070201small-t3-4', '1070201small-t3-5'
+               ]
+"""
+train_data_path = '../data/ProcessData1070208/'
+train_data = ['1070208small-t2', '1070208small-t3']
+test_data_path = '../data/ProcessData1070208/'
+test_data = ['1070208small-t2-2', '1070208small-t3-2']
 
-test_data, test_label = generate_data_label_from_file('../data/ProcessData1070112/training_data_mid_5.h5', preprocess_config, label_config)    
 
-train_data = moving_average(train_data, 10, 1)
-train_label = moving_average(train_label, 10, 1)
+moving_average_window = 10
+moving_average_step = 1
+
+train_data, train_label =  concat_data_label(train_data_path, train_data, preprocess_config, label_config) 
+test_data, test_label = concat_data_label(test_data_path, test_data, preprocess_config, label_config)    
+
+train_data = moving_average(train_data, moving_average_window, moving_average_step)
+train_label = moving_average_label(train_label, moving_average_window, moving_average_step)
 train_label_oh = one_hot_label_generator(train_label)
 
-test_data = moving_average(test_data, 10, 1)
-test_label = moving_average(test_label, 10, 1)
+test_data = moving_average(test_data, moving_average_window, moving_average_step)
+test_label = moving_average_label(test_label, moving_average_window, moving_average_step)
 test_label_oh = one_hot_label_generator(test_label)
-
-
 
 
 import xgboost as xgb
 from xgboost import plot_tree
 from xgboost import plot_importance
 
+#train_label_mask = np.where(np.array(train_label_oh) == 0, 0 ,1)
+
 model = xgb.XGBClassifier(max_depth=5, learning_rate=0.01 ,n_estimators=2000, silent=False)
 model.fit(train_data, train_label_oh)
+
+xg_prediction_train = model.predict(train_data)
 
 #plot_tree(model)
 #plt.show()

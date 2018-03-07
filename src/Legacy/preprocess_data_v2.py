@@ -46,9 +46,9 @@ devices_type = ['AP','STA']
 
 
 #m = db.mongodb_api(user='ubuntu', pwd='ubuntu', collection="ProcessData1061228")
-m = db.mongodb_api(user='ubuntu', pwd='ubuntu', collection="ProcessDataPair1070112mid-5")
+m = db.mongodb_api(user='ubuntu', pwd='ubuntu', collection="1070208small-t1")
 found_data = m.find(ftype='many')
-output_folder = '../data/ProcessData1070112'
+output_folder = '../data/ProcessData1070208'
 output_file = 'training_data_mid_5.h5'
 output_path = os.path.join(output_folder,output_file)
 
