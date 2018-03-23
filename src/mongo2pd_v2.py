@@ -153,8 +153,8 @@ c = pd.cut(
 delay_drop_c1 = delay_drop_c1.join(c.unstack().add_suffix('_cat'))
 print(np.histogram(delay_drop_c1['Delay_mean_cat'], bins=[0,1,2]))
 
-train = delay_drop_c1[:3000]
-test = delay_drop_c1[3000:]
+train = delay_drop_c1[:10000]
+test = delay_drop_c1[10000:]
 train_bins_number = np.histogram(train['Delay_mean_cat'], bins=[0,1,2])
 test_bins_number = np.histogram(test['Delay_mean_cat'], bins=[0,1,2])
 
