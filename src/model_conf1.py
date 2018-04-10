@@ -121,6 +121,7 @@ class models():
   
     
     def fit_model_and_submission(self, model, model_name, exp = True):
+        
         model.fit(self.train, self.y_train)
         pred_train = model.predict(self.train)
         #pred_test = model.predict(self.test)
@@ -169,7 +170,7 @@ class models():
         self.stack_model = StackingAveragedModels(base_models = ([self.ENet, self.Boost, self.KRR]),
                                                  meta_model = self.lasso)
         
-        self.ensemble_model = EnsembleModels([self.stack_model, self.model_xgb, self.model_lgb], [0.7, 0.15, 0.15])
+        self.ensemble_model = EnsembleModels([self.stack_model, self.model_xgb, self.model_lgb], [0.15, 0.7, 0.15])
         
         
     def model_config2(self):  

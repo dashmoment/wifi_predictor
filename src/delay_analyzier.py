@@ -30,8 +30,8 @@ def delay_analysis(MLdf):
     #Check skewness
     
     MLdf['Delay-mean_log'] = np.log1p(MLdf['Delay-mean'])
-    plot_dist_QQ_skew('MLdfDelay-mean', MLdf['Delay-mean'])
-    plot_dist_QQ_skew('MLdfDelay-mean log', MLdf['Delay-mean_log'])
+    #plot_dist_QQ_skew('MLdfDelay-mean', MLdf['Delay-mean'])
+    #plot_dist_QQ_skew('MLdfDelay-mean log', MLdf['Delay-mean_log'])
     #box-cox doesn't help
     
     '''
@@ -43,8 +43,8 @@ def delay_analysis(MLdf):
     
     #Delay max
     MLdf['Delay-max_log'] = np.log1p(MLdf['Delay-max'])
-    plot_dist_QQ_skew('Delay-max', MLdf['Delay-max'])
-    plot_dist_QQ_skew('Delay-max log', MLdf['Delay-max_log'])
+    #plot_dist_QQ_skew('Delay-max', MLdf['Delay-max'])
+    #plot_dist_QQ_skew('Delay-max log', MLdf['Delay-max_log'])
     
     '''
     lam = 0.15

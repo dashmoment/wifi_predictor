@@ -1,8 +1,11 @@
+#Train and test from different set
+
 import sys
 sys.path.append("../")
 
 from mongodb_api import mongodb_api
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -11,7 +14,9 @@ from scipy.stats import norm, skew
 
 from sklearn import metrics
 
-def Read_Collection():
+#Manual Split training and test set
+
+def Read_Collection_train():
     coll_prefix={}
     coll_prefix["Exception"] = []
     BigRun = { "traffic":["-Two5M","-Two10M","-Two15M","-Two20M"], 
@@ -19,7 +24,9 @@ def Read_Collection():
     BigBigRun = { "traffic":["-Two5M","-Two10M","-Two15M","-Two20M","-Two25M","-Two30M"], 
             "ID":["-1", "-2","-3","-4","-5"]} 
     
+    
     coll_prefix["1070323-C2-L1is20"] = BigRun
+    
     coll_prefix["1070322-C2-L1is30"] = BigRun
 
     
@@ -54,9 +61,8 @@ def Read_Collection():
     coll_prefix["1070308-bigrun-L3is25"] = BigBigRun    
     coll_prefix["1070309-bigrun-L3is40"] = BigBigRun
     
-    
-    
-    '''
+  
+   
     coll_prefix["1070222-clear"]={
             "ID":["","-2","-3","-4","-5"]
             }
@@ -86,7 +92,24 @@ def Read_Collection():
             "traffic":["-two20M-L3is50","-two20M-L3isInf"], 
             "ID":["","-2","-3"]
             }
-    '''
+
+
+    
+    
+    return coll_prefix
+
+
+def Read_Collection_test():
+    coll_prefix={}
+    coll_prefix["Exception"] = []
+    BigRun = { "traffic":["-Two5M","-Two10M","-Two15M","-Two20M"], 
+            "ID":["-1", "-2","-3","-4","-5"]}    
+    BigBigRun = { "traffic":["-Two5M","-Two10M","-Two15M","-Two20M","-Two25M","-Two30M"], 
+            "ID":["-1", "-2","-3","-4","-5"]} 
+    
+    NoneTraf = { "traffic":["-None"], "ID":["-1", "-2","-3","-4","-5","-6","-7","-8","-9","-10"]}    
+    coll_prefix["1070326-Free-NoInterfere"] = NoneTraf
+    
     return coll_prefix
 
 def GetData(coll_prefix):
@@ -118,15 +141,15 @@ def GetData(coll_prefix):
 
 def label_generator(df):
     
-    y_train_mean = MLdf['Delay-mean']
-    y_train_logmean = MLdf['Delay-mean_log']
-    y_train_max = MLdf['Delay-max']
-    y_train_logmax = MLdf['Delay-max_log']
+    y_train_mean = df['Delay-mean']
+    y_train_logmean = df['Delay-mean_log']
+    y_train_max = df['Delay-max']
+    y_train_logmax = df['Delay-max_log']
       
-    MLdf.drop('Delay-mean', axis=1, inplace=True) 
-    MLdf.drop('Delay-mean_log', axis=1, inplace=True)
-    MLdf.drop('Delay-max', axis=1, inplace=True)
-    MLdf.drop('Delay-max_log', axis=1, inplace=True)
+    df.drop('Delay-mean', axis=1, inplace=True) 
+    df.drop('Delay-mean_log', axis=1, inplace=True)
+    df.drop('Delay-max', axis=1, inplace=True)
+    df.drop('Delay-max_log', axis=1, inplace=True)
     
     return y_train_mean, y_train_logmean, y_train_max, y_train_logmax
     
@@ -135,7 +158,7 @@ def transform_delay2category(delay):
     
     delay_cat = pd.cut(
                         delay.stack(),
-                        [0,5,10,20, np.inf],
+                        [-np.inf,5,10,20, np.inf],
                         labels = [0,1,2,3]
                         ).reset_index(drop=True)
     
@@ -147,58 +170,51 @@ def transform_delay2category(delay):
 if __name__ == '__main__': 
     
 
-    coll_prefix = Read_Collection()    
-        
-    # ==== Get data from coll_prefix and save it in "fdata"
-    fdata = GetData(coll_prefix)
-      
+    coll_prefix = Read_Collection_train()    
+    fdata_train = GetData(coll_prefix)  
     import mongo2pd_v3 as mpd
-    ProcMLData = mpd.mongo2pd(fdata, time_step=10)
+    ProcMLData = mpd.mongo2pd(fdata_train, time_step=15)
+    
+    coll_prefix = Read_Collection_test()    
+    fdata_test = GetData(coll_prefix)  
+    ProcMLData_test = mpd.mongo2pd(fdata_test, time_step=15)
 
     MLdf = pd.DataFrame(ProcMLData)
+    MLdf_test = pd.DataFrame(ProcMLData_test)
+    
     
     import delay_analyzier as delay_a
     delay_a.delay_analysis(MLdf)
+    delay_a.delay_analysis(MLdf_test)
     
-    import check_correlation as cc
-    cc.check_correlation(MLdf)
-
     '''
     Prepare training set and validation set    
     '''
     y_train_mean, y_train_logmean, y_train_max, y_train_logmax = label_generator(MLdf)    
+    y_test_mean, y_test_logmean, y_test_max, y_test_logmax = label_generator(MLdf_test)    
+    
     train = MLdf
-    y_label_type = y_train_logmean
+    valid = MLdf_test
+    y_train = y_train_logmean
+    y_valid = y_test_logmean
     
-    from sklearn.model_selection import KFold
-    from sklearn.model_selection import train_test_split
-    
-    train, valid, y_train, y_valid = train_test_split(train, y_label_type, test_size=0.2, random_state=0)
+    #y_train = y_train_mean
+    #y_valid = y_test_mean
      
-    '''
-    kf = KFold(5, shuffle=True, random_state=42)
-    train_valid_index = next(kf.split(train), None)
-    
-    train = MLdf.iloc[train_valid_index[0]]
-    y_train = y_label_type.iloc[train_valid_index[0]]
-    
-    valid = MLdf.iloc[train_valid_index[1]]
-    y_valid = y_label_type.iloc[train_valid_index[1]]
-    '''
+ 
     '''
     Regression
     '''
     import model_conf1 
-    m = model_conf1.models(train, y_label_type, train, 5)
+    from xgboost import plot_importance
+    from sklearn.metrics import confusion_matrix
+    
+    m = model_conf1.models(train, y_train, train, 5)
     m.model_config1()
     test_model = m.model_xgb
-    
-    #rmse =m.rmsle_cv(m.model_xgb)
-    #print('Cross validation score', rmse)
-       
+ 
     test_model.fit(train, y_train)
     pred = test_model.predict(valid)
-    
     
     '''
     Evaluation
@@ -206,18 +222,60 @@ if __name__ == '__main__':
     rmse = m.rmsle(np.expm1(y_valid), np.expm1(pred))
     print('RMSE:', rmse)
     
-    plt.scatter(y_valid, pred)
-    
+    #plt.figure()
+    #plt.scatter(y_valid, pred)
+    #plt.show()
     y_valid = pd.DataFrame(np.expm1(y_valid))
     y_pred = pd.DataFrame(np.expm1(pred))
+    
+    #y_valid = pd.DataFrame(y_valid)
+    #y_pred = pd.DataFrame(pred)
     
     y_valid_cat = transform_delay2category(y_valid)
     y_pred_cat = transform_delay2category(y_pred)
        
-    print('Recall:',metrics.recall_score(y_valid_cat, y_pred_cat, average = 'micro'))
-    print('Recall-2:',sum(y_valid_cat == y_pred_cat)/len(y_valid_cat))
+    print('Recall reg_clf:',metrics.recall_score(y_valid_cat, y_pred_cat, average = 'micro'))
+    #print('Recall-2:',sum(y_valid_cat == y_pred_cat)/len(y_valid_cat))
+    c_matrix_rclf = confusion_matrix(y_valid_cat, y_pred_cat)
+
+    print(c_matrix_rclf)
     
-   
+    fig = plt.figure(figsize=(6, 6))
+    plt.plot(y_valid)
+    fig.savefig('valid.png', dpi=fig.dpi)
 
+    fig = plt.figure(figsize=(6, 6))
+    plt.plot(y_pred)
+    fig.savefig('pred.png', dpi=fig.dpi)
 
+    fig = plt.figure(figsize=(6, 6))
+    plt.scatter(y_valid, y_pred)
+    fig.savefig('valid_pred.png', dpi=fig.dpi)
+    #plt.figure()
+    #plot_importance(test_model)
+    #plt.show()
+    
+    
+    ''' 
+    Test classfier
+    '''
+    import xgboost as xgb
+    model = xgb.XGBClassifier(max_depth=3, learning_rate=0.05 ,n_estimators=2000, silent=True)
+    
+    y_train_clf = pd.DataFrame(np.expm1(y_train))
+    y_train_clf = transform_delay2category(np.expm1(y_train_clf))
+    model.fit(train, y_train_clf)
+    y_pred_clf = model.predict(valid)
+    
+    print('Recall clf:',metrics.recall_score(y_valid_cat, y_pred_clf, average = 'micro'))
+    
+    from sklearn.metrics import confusion_matrix
+    xg_train_c_matrix = confusion_matrix(y_valid_cat, y_pred_clf)
+    #plt.imshow(xg_train_c_matrix)
+    #plt.show()
+    
+    c_matrix_clf = confusion_matrix(y_valid_cat, y_pred_clf)
+    #plt.figure()
+    #plot_importance(model)
+    #plt.show()
 
