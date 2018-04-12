@@ -21,72 +21,77 @@ def Read_Collection():
     BigBigRun = { "traffic":["-Two5M","-Two10M","-Two15M","-Two20M","-Two25M","-Two30M"], 
             "ID":["-1", "-2","-3","-4","-5"]} 
     
-#   coll_prefix["1070323-C2-L1is20"] = BigRun
-#    coll_prefix["1070322-C2-L1is30"] = BigRun
-#
-#    
-#    coll_prefix["1070320-C2-L1is20"] = BigRun
-#    
-#    
-#    coll_prefix["1070320-C2-L1is30"] = BigRun
-#    coll_prefix["1070319-C-L1is10"] = BigRun
-#    
-#    coll_prefix["1070317-C-L1is0"] = BigRun
-#    coll_prefix["Exception"].append("1070317-C-L1is0-Two15M-5")
-#    coll_prefix["Exception"].append("1070317-C-L1is0-Two20M-5")    
-#    coll_prefix["Exception"].append("1070317-C-L1is0-Two5M-1")  
-#    
-#    coll_prefix["1070316-L3is40-L4is25"] = BigRun    
-#    
-#    coll_prefix["1070315-L3is40-L4is40"] = BigRun
-#    coll_prefix["Exception"].append("1070315-L3is40-L4is40-Two10M-3")
-#    
-#    
-#    coll_prefix["1070314-L3is10-L4is40"] = BigRun
-#    coll_prefix["Exception"].append("1070314-L3is10-L4is40-Two20M-1")
-#    coll_prefix["Exception"].append("1070314-L3is10-L4is40-Two10M-5")
-#        
-#    coll_prefix["1070314-L3is10-L4is25"] = BigRun
-#    coll_prefix["Exception"].append("1070314-L3is10-L4is25-Two5M-1")
-#    
-#    coll_prefix["1070313-L3is25-L4is25"] = BigRun
-#    
-#    coll_prefix["1070312-L3is25-L4is40"] = BigBigRun    
-#    coll_prefix["1070307-bigrun-L3is10"] = BigBigRun      
-#    coll_prefix["1070308-bigrun-L3is25"] = BigBigRun    
-#    coll_prefix["1070309-bigrun-L3is40"] = BigBigRun
-#    
-#     
-#    coll_prefix["1070222-clear"]={
-#            "ID":["","-2","-3","-4","-5"]
-#            }
-#        
-#    coll_prefix["1070223"]={
-#            "traffic":["-one10M","-one20M"], 
-#            "ID":["","-2","-3"]
-#            }    
-#    coll_prefix["1070227"]={
-#            "traffic":["-two10M","-two10Mt2"], 
-#            "ID":["","-2","-3"]
-#            }    
-#    coll_prefix["1070301"]={
-#            "traffic":["-two20M","-two20Mt2"], 
-#            "ID":["","-2","-3"]
-#            }    
-#    coll_prefix["1070302"]={
-#            "traffic":["-two20M","-two20M-L3is30"], 
-#            "ID":["","-2","-3"]
-#            }    
-#    coll_prefix["1070305"]={
-#            "traffic":["-two10M-L3is40","-two20M-L3is40"], 
-#            "ID":["","-2","-3"]
-#            }        
-#    
-#    coll_prefix["1070306"]={
-#            "traffic":["-two20M-L3is50","-two20M-L3isInf"], 
-#            "ID":["","-2","-3"]
-#            }
-#    
+    NoneTraf = { "traffic":["-None"], "ID":["-1", "-2","-3","-4","-5","-6","-7","-8","-9","-10"]}   
+    
+    coll_prefix["1070323-C2-L1is20"] = BigRun
+    coll_prefix["1070322-C2-L1is30"] = BigRun
+
+    
+    coll_prefix["1070320-C2-L1is20"] = BigRun
+    
+    
+    coll_prefix["1070320-C2-L1is30"] = BigRun
+    coll_prefix["1070319-C-L1is10"] = BigRun
+    
+    coll_prefix["1070317-C-L1is0"] = BigRun
+    coll_prefix["Exception"].append("1070317-C-L1is0-Two15M-5")
+    coll_prefix["Exception"].append("1070317-C-L1is0-Two20M-5")    
+    coll_prefix["Exception"].append("1070317-C-L1is0-Two5M-1")  
+    
+    coll_prefix["1070316-L3is40-L4is25"] = BigRun    
+    
+    coll_prefix["1070315-L3is40-L4is40"] = BigRun
+    coll_prefix["Exception"].append("1070315-L3is40-L4is40-Two10M-3")
+    
+    
+    coll_prefix["1070314-L3is10-L4is40"] = BigRun
+    coll_prefix["Exception"].append("1070314-L3is10-L4is40-Two20M-1")
+    coll_prefix["Exception"].append("1070314-L3is10-L4is40-Two10M-5")
+        
+    coll_prefix["1070314-L3is10-L4is25"] = BigRun
+    coll_prefix["Exception"].append("1070314-L3is10-L4is25-Two5M-1")
+    
+    coll_prefix["1070313-L3is25-L4is25"] = BigRun
+    
+    coll_prefix["1070312-L3is25-L4is40"] = BigBigRun    
+    coll_prefix["1070307-bigrun-L3is10"] = BigBigRun      
+    coll_prefix["1070308-bigrun-L3is25"] = BigBigRun    
+    coll_prefix["1070309-bigrun-L3is40"] = BigBigRun
+    
+     
+    coll_prefix["1070222-clear"]={
+            "ID":["","-2","-3","-4","-5"]
+            }
+        
+    coll_prefix["1070223"]={
+            "traffic":["-one10M","-one20M"], 
+            "ID":["","-2","-3"]
+            }    
+    coll_prefix["1070227"]={
+            "traffic":["-two10M","-two10Mt2"], 
+            "ID":["","-2","-3"]
+            }    
+    coll_prefix["1070301"]={
+            "traffic":["-two20M","-two20Mt2"], 
+            "ID":["","-2","-3"]
+            }    
+    coll_prefix["1070302"]={
+            "traffic":["-two20M","-two20M-L3is30"], 
+            "ID":["","-2","-3"]
+            }    
+    coll_prefix["1070305"]={
+            "traffic":["-two10M-L3is40","-two20M-L3is40"], 
+            "ID":["","-2","-3"]
+            }        
+    
+    coll_prefix["1070306"]={
+            "traffic":["-two20M-L3is50","-two20M-L3isInf"], 
+            "ID":["","-2","-3"]
+            }
+    
+     #---------Differ from C1----------
+    coll_prefix["1070328-Clear"] = NoneTraf
+    
     return coll_prefix
 
 def GetData(coll_prefix):
@@ -152,10 +157,11 @@ if __name__ == '__main__':
     # ==== Get data from coll_prefix and save it in "fdata"
     fdata = GetData(coll_prefix)
       
-    import mongo2pd_v3 as mpd
-    ProcMLData = mpd.mongo2pd(fdata, time_step=15)
-
-    MLdf = pd.DataFrame(ProcMLData)
+    import mongo2pd_v4 as mpd
+#    ProcMLData = mpd.mongo2pd(fdata, time_step=15)
+#    MLdf = pd.DataFrame(ProcMLData)
+#    MLdf = mpd.mongo2pd(fdata, time_step=15, special_list = ['SS_Subval'])
+    MLdf = mpd.mongo2pd(fdata, time_step=15)
     
     import delay_analyzier as delay_a
     delay_a.delay_analysis(MLdf)
@@ -215,6 +221,9 @@ if __name__ == '__main__':
     y_valid = pd.DataFrame(np.expm1(y_valid))
     y_pred = pd.DataFrame(np.expm1(pred))
     
+    y_valid = y_valid.reset_index(drop=True)
+    y_pred = y_pred.reset_index(drop=True)
+    
     y_valid_cat = transform_delay2category(y_valid)
     y_pred_cat = transform_delay2category(y_pred)
        
@@ -223,23 +232,38 @@ if __name__ == '__main__':
     
     c_matrix_clf = confusion_matrix(y_valid_cat, y_pred_cat)
     
-    #plt.figure()
-    #plot_importance(test_model)
-    #plt.show()
+
+    print(c_matrix_clf)
+    
+    fig = plt.figure(figsize=(6, 6))
+    plt.plot(y_valid)
+    fig.savefig('valid.png', dpi=fig.dpi)
+
+    fig = plt.figure(figsize=(6, 6))
+    plt.plot(y_pred)
+    fig.savefig('pred.png', dpi=fig.dpi)
+
+    fig = plt.figure(figsize=(6, 6))
+    plt.scatter(y_valid, y_pred)
+    fig.savefig('valid_pred.png', dpi=fig.dpi)
+   
+    
+    importance=pd.Series(test_model.feature_importances_,index=train.columns).sort_values(ascending=False)
+    importance.to_csv('importance.csv')
     
     
     ''' 
     Test classfier
     '''
-    import xgboost as xgb
-    model = xgb.XGBClassifier(max_depth=3, learning_rate=0.05 ,n_estimators=2000, silent=True)
-    
-    y_train_clf = pd.DataFrame(np.expm1(y_train))
-    y_train_clf = transform_delay2category(np.expm1(y_train_clf))
-    model.fit(train, y_train_clf)
-    y_pred_clf = model.predict(valid)
-    
-    print('Recall clf:',metrics.recall_score(y_valid_cat, y_pred_clf, average = 'micro'))
+#    import xgboost as xgb
+#    model = xgb.XGBClassifier(max_depth=3, learning_rate=0.05 ,n_estimators=2000, silent=True)
+#    
+#    y_train_clf = pd.DataFrame(np.expm1(y_train))
+#    y_train_clf = transform_delay2category(np.expm1(y_train_clf))
+#    model.fit(train, y_train_clf)
+#    y_pred_clf = model.predict(valid)
+#    
+#    print('Recall clf:',metrics.recall_score(y_valid_cat, y_pred_clf, average = 'micro'))
     
     #from sklearn.metrics import confusion_matrix
     #xg_train_c_matrix = confusion_matrix(y_valid_cat, y_pred_clf)

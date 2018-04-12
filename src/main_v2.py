@@ -255,6 +255,9 @@ if __name__ == '__main__':
     #plot_importance(test_model)
     #plt.show()
     
+    importance=pd.Series(test_model.feature_importances_,index=train.columns).sort_values(ascending=False)
+    importance.to_csv('importance.csv')
+    
     
     ''' 
     Test classfier

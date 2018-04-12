@@ -16,106 +16,12 @@ from scipy.stats import norm, skew
 from sklearn import metrics
 
 from utility import c_save_image, c_print
-
+import train_test_config as conf
 #Manual Split training and test set
 
-def Read_Collection_train():
-    coll_prefix={}
-    coll_prefix["Exception"] = []
-    BigRun = { "traffic":["-Two5M","-Two10M","-Two15M","-Two20M"], 
-            "ID":["-1", "-2","-3","-4","-5"]}    
-    BigBigRun = { "traffic":["-Two5M","-Two10M","-Two15M","-Two20M","-Two25M","-Two30M"], 
-            "ID":["-1", "-2","-3","-4","-5"]} 
-    
-    testrun = { "traffic":["-Two5M"], 
-            "ID":["-1"]} 
-    #coll_prefix["1070323-C2-L1is20"] = testrun
-    
-    coll_prefix["1070323-C2-L1is20"] = BigRun
-    
-    coll_prefix["1070322-C2-L1is30"] = BigRun
+Read_Collection_train = conf.Read_Collection_train_c1
+Read_Collection_test = conf.Read_Collection_test_c1
 
-    
-    coll_prefix["1070320-C2-L1is20"] = BigRun
-    
-    
-    coll_prefix["1070320-C2-L1is30"] = BigRun
-    coll_prefix["1070319-C-L1is10"] = BigRun
-    
-    coll_prefix["1070317-C-L1is0"] = BigRun
-    coll_prefix["Exception"].append("1070317-C-L1is0-Two15M-5")
-    coll_prefix["Exception"].append("1070317-C-L1is0-Two20M-5")    
-    coll_prefix["Exception"].append("1070317-C-L1is0-Two5M-1")  
-    
-    coll_prefix["1070316-L3is40-L4is25"] = BigRun    
-    
-    coll_prefix["1070315-L3is40-L4is40"] = BigRun
-    coll_prefix["Exception"].append("1070315-L3is40-L4is40-Two10M-3")
-    
-    
-    coll_prefix["1070314-L3is10-L4is40"] = BigRun
-    coll_prefix["Exception"].append("1070314-L3is10-L4is40-Two20M-1")
-    coll_prefix["Exception"].append("1070314-L3is10-L4is40-Two10M-5")
-        
-    coll_prefix["1070314-L3is10-L4is25"] = BigRun
-    coll_prefix["Exception"].append("1070314-L3is10-L4is25-Two5M-1")
-    
-    coll_prefix["1070313-L3is25-L4is25"] = BigRun
-    
-    coll_prefix["1070312-L3is25-L4is40"] = BigBigRun    
-    coll_prefix["1070307-bigrun-L3is10"] = BigBigRun      
-    coll_prefix["1070308-bigrun-L3is25"] = BigBigRun    
-    coll_prefix["1070309-bigrun-L3is40"] = BigBigRun
-    
-  
-   
-    coll_prefix["1070222-clear"]={
-            "ID":["","-2","-3","-4","-5"]
-            }
-        
-    coll_prefix["1070223"]={
-            "traffic":["-one10M","-one20M"], 
-            "ID":["","-2","-3"]
-            }    
-    coll_prefix["1070227"]={
-            "traffic":["-two10M","-two10Mt2"], 
-            "ID":["","-2","-3"]
-            }    
-    coll_prefix["1070301"]={
-            "traffic":["-two20M","-two20Mt2"], 
-            "ID":["","-2","-3"]
-            }    
-    coll_prefix["1070302"]={
-            "traffic":["-two20M","-two20M-L3is30"], 
-            "ID":["","-2","-3"]
-            }    
-    coll_prefix["1070305"]={
-            "traffic":["-two10M-L3is40","-two20M-L3is40"], 
-            "ID":["","-2","-3"]
-            }        
-    
-    coll_prefix["1070306"]={
-            "traffic":["-two20M-L3is50","-two20M-L3isInf"], 
-            "ID":["","-2","-3"]
-            }
-    
-    
-    return coll_prefix
-
-
-def Read_Collection_test():
-    coll_prefix={}
-    coll_prefix["Exception"] = []
-    BigRun = { "traffic":["-Two5M","-Two10M","-Two15M","-Two20M"], 
-            "ID":["-1", "-2","-3","-4","-5"]}    
-    BigBigRun = { "traffic":["-Two5M","-Two10M","-Two15M","-Two20M","-Two25M","-Two30M"], 
-            "ID":["-1", "-2","-3","-4","-5"]} 
-    
-    NoneTraf = { "traffic":["-None"], "ID":["-1", "-2","-3","-4","-5","-6","-7","-8","-9","-10"]}    
-    #coll_prefix["1070326-Free-NoInterfere"] = NoneTraf
-    coll_prefix["1070328-Office"] = BigRun
-    
-    return coll_prefix
 
 def GetData(coll_prefix):
     fdata = []
@@ -177,18 +83,16 @@ if __name__ == '__main__':
 
     coll_prefix = Read_Collection_train()    
     fdata_train = GetData(coll_prefix)  
-    import mongo2pd_v3 as mpd
-    #ProcMLData = mpd.mongo2pd(fdata_train, time_step=15, special_list = ['SS_Subval'])
-    ProcMLData = mpd.mongo2pd(fdata_train, time_step=15)
+    import mongo2pd_v4 as mpd
+    #MLdf = mpd.mongo2pd(fdata_train, time_step=15, special_list = ['SS_Subval'])
+    MLdf = mpd.mongo2pd(fdata_train, time_step=15)
     coll_prefix = Read_Collection_test()    
     fdata_test = GetData(coll_prefix)  
-    ProcMLData_test = mpd.mongo2pd(fdata_test, time_step=15)
-    #ProcMLData_test = mpd.mongo2pd(fdata_test, time_step=15, special_list = ['SS_Subval'])
+    MLdf_test= mpd.mongo2pd(fdata_test, time_step=15)
+    #MLdf_test = mpd.mongo2pd(fdata_test, time_step=15, special_list = ['SS_Subval'])
 
     c_print('Finish loading data')
 
-    MLdf = pd.DataFrame(ProcMLData)
-    MLdf_test = pd.DataFrame(ProcMLData_test)
     
     
     import delay_analyzier as delay_a
