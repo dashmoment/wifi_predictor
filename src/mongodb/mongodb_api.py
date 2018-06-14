@@ -74,7 +74,7 @@ def api_demo():
         one = m.find(key_value = find_reg)
         print("Found one: ",one)
     
-m = mongodb_api(user='ubuntu', pwd='ubuntu', collection="TestData1061121")
-one = m.find(key_value = {})
-print(one)
-#api_demo()
+#m = mongodb_api(user='ubuntu', pwd='ubuntu', collection="TestData1061121")
+#one = m.find(key_value = {})
+#print(one)
+##api_demo()
