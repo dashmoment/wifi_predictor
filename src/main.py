@@ -21,14 +21,24 @@ from feature_extraction import label_generator as label_gen
 from model import ensemble_model 
 #Manual Split training and test set
 
-config = conf.train_test_config('Read_Collection_train_c1', 'Read_Collection_test_c1')
+
+config = conf.train_test_config('Read_Collection_train_c2', 'Read_Collection_test_c2')
 fext = feature_extraction.feature_extraction()
+
+#fdata = fext._getData(config.train) 
 
 if __name__ == '__main__': 
         
     #Generator train & test data by configuration 
     train, label_train = fext.generator(config.train, time_step=15)
-    test, label_test = fext.generator(config.test, time_step=15)
+    #test, label_test = fext.generator(config.test, time_step=15)
+    
+    portion = int(len(train)*0.8)
+    test = train[portion:]
+    label_test = label_train[portion:]
+    train = train[:portion]
+    label_train = label_train[:portion]
+    
     io.c_print('Finish loading data')
     
     label_train = label_train['delay_mean_log']
@@ -38,7 +48,7 @@ if __name__ == '__main__':
     #Regression
     io.c_print('Start regressor training')
     m = ensemble_model.models(train, label_train, test, 5)
-    model = m.m8_ensemble()
+    model = m.model_lgb
     model.fit(train, label_train)    
     io.c_print('Finish regressor training')    
     

@@ -33,18 +33,21 @@ class train_test_config:
         
         #coll_prefix["1070323-C2-L1is20"] = testrun
         
+        
         coll_prefix["1070323-C2-L1is20"] = BigRun  
+        
         coll_prefix["1070322-C2-L1is30"] = BigRun
      
         coll_prefix["1070320-C2-L1is20"] = BigRun       
         
         coll_prefix["1070320-C2-L1is30"] = BigRun
         coll_prefix["1070319-C-L1is10"] = BigRun
-        
+       
         coll_prefix["1070317-C-L1is0"] = BigRun
         coll_prefix["Exception"].append("1070317-C-L1is0-Two15M-5")
         coll_prefix["Exception"].append("1070317-C-L1is0-Two20M-5")    
         coll_prefix["Exception"].append("1070317-C-L1is0-Two5M-1")  
+        
         
         coll_prefix["1070316-L3is40-L4is25"] = BigRun    
         
@@ -64,8 +67,10 @@ class train_test_config:
         coll_prefix["1070312-L3is25-L4is40"] = BigBigRun    
         coll_prefix["1070307-bigrun-L3is10"] = BigBigRun      
         coll_prefix["1070308-bigrun-L3is25"] = BigBigRun    
-        coll_prefix["1070309-bigrun-L3is40"] = BigBigRun    
-       
+        coll_prefix["1070309-bigrun-L3is40"] = BigBigRun  
+
+        
+        
         coll_prefix["1070222-clear"]={
                 "ID":["","-2","-3","-4","-5"]
                 }
@@ -95,7 +100,6 @@ class train_test_config:
                 "traffic":["-two20M-L3is50","-two20M-L3isInf"], 
                 "ID":["","-2","-3"]
                 }
-        
         
         return coll_prefix
 
@@ -205,10 +209,7 @@ class train_test_config:
     def Read_Collection_train_ct(self):
         coll_prefix={}
         coll_prefix["Exception"] = []
-
         coll_prefix["1070323-C2-L1is20"] = testrun
-        
-       
         
         return coll_prefix
 
@@ -216,10 +217,6 @@ class train_test_config:
     def Read_Collection_test_ct(self):
         coll_prefix={}
         coll_prefix["Exception"] = []
-       
-        
-        coll_prefix["1070322-C2-L1is30"] = BigRun
-            
-       
+        coll_prefix["1070322-C2-L1is30"] = BigRun 
         
         return coll_prefix

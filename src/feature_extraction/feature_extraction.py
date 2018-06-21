@@ -1,9 +1,11 @@
 import sys
 sys.path.append("../")
-from mongodb import mongodb_api
-from utility import io
 import numpy as np
 import pandas as pd
+import math
+
+from mongodb import mongodb_api
+from utility import io
 from feature_extraction.signal_embedding import run_signal_embedding
 
 class feature_extraction:
@@ -76,9 +78,8 @@ class feature_extraction:
             devlist = ['AP', 'STA']
             labellist = ['Rcv', 'CCK_ERRORS', 'CRC-ERR', 'FCSError', 'OFDM_ERRORS', 'SS_Rssi']
 
-            ProcMLData={}
-            
             #init continer for dictionary to dataFrame
+            ProcMLData={}
             for dev in devlist:
                 ProcMLData['Delay-mean'] = []
                 ProcMLData['Delay-max'] = []
@@ -91,32 +92,55 @@ class feature_extraction:
                     for i in range(56): 
                         ProcMLData[dev+'-SS_Subval-mean-'+str(i)] = []
             
-            for idx in range(len(fdata)-time_step):
-             
+            for idx in range(len(fdata)-time_step):   
+
+                isNull = False         
                 current = fdata[idx : idx + time_step] #Get current time step data
-                
-                if 'SS_Subval' in special_list:
-                    mean_SS_Subval = []
-                    for dev in devlist:
-                        
-                        mean_SS_Subval.append(self._feature_extraction(current, dev, 'SS_Subval', np.mean,0))
-                    
-                    #SS_Subval should have 56, if length not 56--> ignore
-                    if np.shape(mean_SS_Subval) != (len(devlist), 56): continue
-                    else:
-                        for j in range(len(devlist)):
-                            for i in range(56):
-                                ProcMLData[devlist[j]+'-SS_Subval-mean-'+str(i)].append(mean_SS_Subval[j][i])
-                    
+
+                SS_Subval_tmp = {}
+                features_tmp = {}  
+
                 for dev in devlist:
-                                           
-                    for label in labellist:
-                        ProcMLData[dev+'-'+label+'-mean'].append(self._feature_extraction(current, dev, label, np.mean))
+                    if 'SS_Subval' in special_list:            
+                        mean_SS_Subval = self._feature_extraction(current, dev, 'SS_Subval', np.mean,0)
+                        #SS_Subval should have 56, if length not 56--> ignore
+                        if isinstance(mean_SS_Subval,  np.ndarray)  and len(mean_SS_Subval) == 56:
+                            for i in range(56):
+                                SS_Subval_tmp[dev +'-SS_Subval-mean-'+str(i)] = mean_SS_Subval[i]    
+                        else:          
+                            isNull = True
+                                              
+                    for label in labellist:  
+                        feature = self._feature_extraction(current, dev, label, np.mean)       
+                        
+                        if math.isnan(feature): 
+                            isNull = True
+                            break
+                        else:
+                            features_tmp[dev+'-'+label+'-mean'] = feature
+
+                    if isNull: break
+                    else: continue 
                 
-                
-                ProcMLData['Delay-mean'].append(self._feature_extraction(current, 'AP', 'Delay', np.mean))
-                ProcMLData['Delay-max'].append(self._feature_extraction(current, 'AP', 'Delay', np.max))
-                
+                if not isNull:   
+                    
+                    if 'SS_Subval' in special_list:
+                        for k in SS_Subval_tmp:
+                            ProcMLData[k].append(SS_Subval_tmp[k])
+                    for k in features_tmp:
+                        ProcMLData[k].append(features_tmp[k])                
+                    
+                    ProcMLData['Delay-mean'].append(self._feature_extraction(current, 'AP', 'Delay', np.mean))
+                    ProcMLData['Delay-max'].append(self._feature_extraction(current, 'AP', 'Delay', np.max))
+
+                    #********Check Length**********
+                    stadard_len = len(ProcMLData['Delay-mean'])
+                    for k in ProcMLData:
+                        if len(ProcMLData[k]) != stadard_len:
+                            raise Exception('Length error:{},{}, {}, {}'.format(idx, k, stadard_len, len(ProcMLData[k])))
+                        else:
+                            continue
+             
             df = pd.DataFrame(ProcMLData)  
             label = self.label_generator(df)
 
