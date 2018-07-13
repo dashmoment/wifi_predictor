@@ -8,7 +8,7 @@ __pycache__/
 
 #Customized
 data/
-model/
+trained_model/
 # Distribution / packaging
 .Python
 env/
