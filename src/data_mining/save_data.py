@@ -20,10 +20,10 @@ import importlib
 config = conf.train_test_config('Read_Collection_train_c1', 'Read_Collection_test_c1')
 fext = feature_extraction_rahul.feature_extraction()
 
-train, label_train = fext.generator(config.train, time_step=15)
-test, label_test = fext.generator(config.test, time_step=15)
+train, label_train = fext.generator(config.train, time_step=15, special_list='SS_Subval')
+test, label_test = fext.generator(config.test, time_step=15, special_list='SS_Subval')
 
-with open('../../data/raw_data_w_time.pkl', 'wb') as output:
+with open('../../data/raw_data_w_time_sub.pkl', 'wb') as output:
     pickle.dump(train, output, pickle.HIGHEST_PROTOCOL)
     pickle.dump(label_train, output, pickle.HIGHEST_PROTOCOL)
     pickle.dump(test, output, pickle.HIGHEST_PROTOCOL)
@@ -33,10 +33,10 @@ with open('../../data/raw_data_w_time.pkl', 'wb') as output:
 # feature extraction without time
 fext = feature_extraction.feature_extraction()
 
-train, label_train = fext.generator(config.train, time_step=15)
-test, label_test = fext.generator(config.test, time_step=15)
+train, label_train = fext.generator(config.train, time_step=15, special_list='SS_Subval')
+test, label_test = fext.generator(config.test, time_step=15, special_list='SS_Subval')
 
-with open('../../data/raw_data_wo_time.pkl', 'wb') as output:
+with open('../../data/raw_data_wo_time_sub.pkl', 'wb') as output:
     pickle.dump(train, output, pickle.HIGHEST_PROTOCOL)
     pickle.dump(label_train, output, pickle.HIGHEST_PROTOCOL)
     pickle.dump(test, output, pickle.HIGHEST_PROTOCOL)
