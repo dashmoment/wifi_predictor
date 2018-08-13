@@ -1,24 +1,30 @@
 # General
 pip install --upgrade pip
 
-# For app
-pip install PyQt5
-
-# For face_detector
+# For feature extraction
+pip install sys
 pip install numpy
+pip install pandas
+pip install matplotlib
+pip install math
+pip install keras
 pip install tensorflow
-pip install opencv-python
-pip install pyzmq
-pip install pillow
-pip install coloredlogs
 
-# For face_recognizer
+# For data mining
+pip install importlib
+pip install datetime
+
+# For mongodb
+pip install pymongo
+
+# For main
+pip install pickle
+pip install seaborn
 pip install scipy
 pip install sklearn
-pip install matplotlib
-pip install mpld3
-pip install jinja2
+pip install statsmodels
+pip install xgboost
 
-# For 3rd party lib
-pip install baidu-aip
+
+
 
