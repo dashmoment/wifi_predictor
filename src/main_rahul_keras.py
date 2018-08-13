@@ -95,7 +95,7 @@ def neural_network(num_feature=10, lr=0.0005, batch_size=64, epochs=1):
     adam_decay = keras.optimizers.Adam(lr=lr, decay=1e-6, epsilon=1e-8)
     sgd = keras.optimizers.SGD(lr=lr, momentum=0.9)
     sgd_decay = keras.optimizers.SGD(lr=lr, momentum=0.9, decay=1e-6)
-    wifi.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    wifi.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
 
     # weighted loss
     y_train_classes = label_gen_r.transform_delay2category(label_train['delay_mean'])
@@ -150,4 +150,4 @@ def soft_acc(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    neural_network(num_feature=10, lr=0.0001, batch_size=64, epochs=300)
+    neural_network(num_feature=12, lr=0.0001, batch_size=64, epochs=500)
