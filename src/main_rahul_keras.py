@@ -47,12 +47,12 @@ with open('../data/raw_data_wo_time_sub.pkl', 'rb') as input:
 train = feature_engineering.binding(train)
 test_raw = feature_engineering.binding(test_raw)
 
-'''
+
 # Use AP only
 ap_col = [col for col in train.columns if 'AP' in col]
 train = train[ap_col]
 test_raw = test_raw[ap_col]
-'''
+
 
 # Use only attenuator data to split into training and testing set
 #train, label_train, test, label_test = label_gen_r.RandomSample(train, label_train, fraction=0.8)
@@ -67,7 +67,7 @@ print(train.isnull().any())
 print(train.isnull().sum())
 
 
-def neural_network(num_feature=10, lr=0.0005, batch_size=64, epochs=1):
+def neural_network(num_feature=8, lr=0.0005, batch_size=64, epochs=1):
 
     # feature selection
     anova_filter = SelectKBest(f_regression, k=num_feature).fit(train, label_train['delay_mean'])
@@ -150,4 +150,4 @@ def soft_acc(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    neural_network(num_feature=12, lr=0.0001, batch_size=64, epochs=500)
+    neural_network(num_feature=8, lr=0.0001, batch_size=64, epochs=500)
