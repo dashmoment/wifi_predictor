@@ -15,7 +15,7 @@ def transform_delay2category(delay):
 
 
 
-def TransferToOneHotClass(delay):
+def transfer_to_one_hot_class(delay):
 
     delay = pd.DataFrame(delay)
     delay_cat = transform_delay2category(delay)
@@ -27,7 +27,7 @@ def TransferToOneHotClass(delay):
 
 
 
-def RandomSample(inputs, label_inputs, fraction=0.8):
+def random_sample(inputs, label_inputs, fraction=0.8):
     
     total = pd.DataFrame(inputs)
     label_total = pd.DataFrame(label_inputs)
@@ -43,5 +43,5 @@ def RandomSample(inputs, label_inputs, fraction=0.8):
 
 
 
-def WeightedRandomSample(inputs, label_inputs, fraction=0.8):
+def weighted_random_sample(inputs, label_inputs, fraction=0.8):
     pass
