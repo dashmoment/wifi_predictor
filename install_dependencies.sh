@@ -8,7 +8,6 @@ pip install pandas
 pip install matplotlib
 pip install math
 pip install keras
-pip install tensorflow
 
 # For data mining
 pip install importlib
