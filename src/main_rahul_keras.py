@@ -62,7 +62,7 @@ total = pd.concat([train, test_raw])
 label_total = pd.concat([label_train['delay_mean'], label_test_raw['delay_mean']])
 label_total = pd.DataFrame(label_total).rename(columns={'Delay-mean': 'delay_mean'})
 
-train, label_train, test, label_test = label_gen_r.RandomSample(total, label_total, fraction=0.8)
+train, label_train, test, label_test = label_gen_r.random_sample(total, label_total, fraction=0.8)
 print(train.isnull().any())
 print(train.isnull().sum())
 
@@ -75,11 +75,11 @@ def neural_network(num_feature=8, lr=0.0005, batch_size=64, epochs=1):
     print('Selected features: {}'.format(train.columns[mask]))
 
     train_set = [train.iloc[:, mask],
-                 label_gen_r.TransferToOneHotClass(label_train['delay_mean'])]
+                 label_gen_r.transfer_to_one_hot_class(label_train['delay_mean'])]
     test_set = [test.iloc[:, mask],
-                label_gen_r.TransferToOneHotClass(label_test['delay_mean'])]
+                label_gen_r.transfer_to_one_hot_class(label_test['delay_mean'])]
     test_raw_set = [test_raw.iloc[:, mask],
-                    label_gen_r.TransferToOneHotClass(label_test_raw['delay_mean'])]
+                    label_gen_r.transfer_to_one_hot_class(label_test_raw['delay_mean'])]
 
     # normalization
     train_set[0] = (train_set[0] - train_set[0].mean())/train_set[0].std()
