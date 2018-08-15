@@ -6,7 +6,7 @@ import math
 
 from mongodb import mongodb_api
 from utility import io
-from feature_extraction.signal_embedding import run_signal_embedding
+#from feature_extraction.signal_embedding import run_signal_embedding
 
 class feature_extraction:
 
@@ -145,15 +145,15 @@ class feature_extraction:
             label = self.label_generator(df)
 
             #Add SS_Subval_emb: which is embeded 56 SS_Subval into N embeded signal by NN model    
-            if 'SS_Subval' in special_list and embed_model_path != "":
+            # if 'SS_Subval' in special_list and embed_model_path != "":
                 
-                signal_embedding = run_signal_embedding.signal_embeding(embed_model_path)
-                embeded_signal = signal_embedding.predict(df)
+            #     signal_embedding = run_signal_embedding.signal_embeding(embed_model_path)
+            #     embeded_signal = signal_embedding.predict(df)
                 
-                #spike_cols = [col for col in MLdf.columns if 'SS_Subval' in col]
-                #MLdf.drop(spike_cols, axis=1, inplace=True) 
+            #     #spike_cols = [col for col in MLdf.columns if 'SS_Subval' in col]
+            #     #MLdf.drop(spike_cols, axis=1, inplace=True) 
                 
-                df = pd.concat([df, embeded_signal], axis=1)
+            #     df = pd.concat([df, embeded_signal], axis=1)
                             
             
             return df, label
