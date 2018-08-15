@@ -150,4 +150,4 @@ def soft_acc(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    neural_network(num_feature=8, lr=0.0001, batch_size=64, epochs=500)
+    neural_network(num_feature=10, lr=0.0005, batch_size=64, epochs=500)
