@@ -55,7 +55,7 @@ test_raw = test_raw[ap_col]
 
 
 # Use only attenuator data to split into training and testing set
-#train, label_train, test, label_test = label_gen_r.RandomSample(train, label_train, fraction=0.8)
+#train, label_train, test, label_test = label_gen_r.random_sample(train, label_train, fraction=0.8)
 
 # Combine attenuator and office data to split into training and testing set
 total = pd.concat([train, test_raw])
