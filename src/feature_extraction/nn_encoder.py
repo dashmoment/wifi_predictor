@@ -55,16 +55,16 @@ def generate_randomMask(length, amount):
 def build_encoder(inputShpae, initializer='he_uniform'):
     
     layerIndex = 0
-    Nfilters = 64
+    Nfilters = 32
     
     x_input = x = Input(inputShpae) 
-    for i in range(2):
+    for i in range(4):
 
         x = Dense(Nfilters, kernel_initializer=initializer, name='fc'+str(layerIndex))(x)
         x = Activation('relu')(x)    
         x = BatchNormalization(name='bn'+str(layerIndex))(x)
         layerIndex+=1
-        if i%2==0 : Nfilters *= 2
+        
         
 
     prediction = Dense(4, activation='softmax', kernel_initializer=initializer, name='output')(x)
@@ -96,19 +96,13 @@ if __name__ == '__main__':
     train, label_train = fext.generator(config.train, time_step=15,  special_list = ['SS_Subval'])
    
     
-    #Extract subval
+    #Extract subval and normalization
     train_AP_SS =  train[[cols for cols in train.columns if 'AP-SS_Subval' in cols]]
-    train_STA_SS =  train[[cols for cols in train.columns if 'STA-SS_Subval' in cols]]    
+    train_AP_SS = (train_AP_SS - train_AP_SS.mean())/train_AP_SS.std()
+    train_STA_SS =  train[[cols for cols in train.columns if 'STA-SS_Subval' in cols]]
+    train_STA_SS = (train_STA_SS - train_STA_SS.mean())/train_STA_SS.std()    
     label_train_dm =  label_gen_r.TransferToOneHotClass(label_train['delay_mean'])
     
-#    mask = generate_randomMask(110218, 500)
-#    
-#    label_c0 = label_train_dm[label_train_dm[0] == 1]
-#    label_c1 = label_train_dm[label_train_dm[1] == 1]
-#    label_c2 = label_train_dm[label_train_dm[2] == 1]
-#    label_c3 = label_train_dm[label_train_dm[3] == 1]
-#    
-#    label_c0_train, label_c0_test = train_test_split(label_c0, train_size=20000)
     
     #Display label categorical distribution
     if ifShowPlot:
@@ -139,18 +133,15 @@ if __name__ == '__main__':
                                                             '../../trained_model/nn_encoder/nn_encoder.json',
                                                             '../../trained_model/nn_encoder/nn_encoder.h5'
                                                             )
-    tensorBoard_cb = keras_event_callBack.tensorBoard_Callback()
+    tensorBoard_cb = keras_event_callBack.tensorBoard_Callback(log_dir='../../trained_model/nn_encoder/logs')
     
     history = model.fit(
                         train_data,
                         train_label,
                         epochs=model_config['epochs'],
-                        steps_per_epoch = len(train_AP_SS)//model_config['batch_size'],
                         validation_data = (test_data, test_label),
-                        validation_steps = model_config['validation_step']*len(train_AP_SS)//model_config['batch_size'],
                         class_weight=calculate_classWeight(label_train_dm),
-                        callbacks = [saveModel_cb, tensorBoard_cb]
-                        
+                        callbacks = [saveModel_cb, tensorBoard_cb]                     
                         )
    
     
