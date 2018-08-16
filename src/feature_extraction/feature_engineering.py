@@ -24,6 +24,8 @@ def binding(dataframe=None):
               .pipe(ComputeMax, client='STA', ap_sub=ap_sub, sta_sub=sta_sub)
               .pipe(ComputeMin, client='AP', ap_sub=ap_sub, sta_sub=sta_sub)
               .pipe(ComputeMin, client='STA', ap_sub=ap_sub, sta_sub=sta_sub)
+              .pipe(ComputeMaxMinusMin, client='AP', ap_sub=ap_sub, sta_sub=sta_sub)
+              .pipe(ComputeMaxMinusMin, client='STA', ap_sub=ap_sub, sta_sub=sta_sub)
      )
 
     dataframe.drop(ap_sub + sta_sub, axis=1, inplace=True)
@@ -115,3 +117,19 @@ def ComputeMin(dataframe, client=None, ap_sub=None, sta_sub=None):
 
     return dataframe
 
+
+def ComputeMaxMinusMin(dataframe, client=None, ap_sub=None, sta_sub=None):
+
+    assert isinstance(dataframe, pd.DataFrame) == True
+
+    if client == 'AP':
+        df_ap = dataframe[ap_sub]
+        feature_ap = df_ap.apply(lambda x: np.max(x)-np.min(x), axis=1)
+        dataframe['AP-Sub-Max-min'] = pd.Series(feature_ap, index=dataframe.index)
+
+    if client == 'STA':
+        df_sta = dataframe[sta_sub]
+        feature_sta = df_sta.apply(lambda x: np.max(x)-np.min(x), axis=1)
+        dataframe['STA-Sub-Max-min'] = pd.Series(feature_sta, index=dataframe.index)
+
+    return dataframe

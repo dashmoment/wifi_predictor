@@ -25,13 +25,6 @@ def nn_model(input_shape):
     X = BatchNormalization(name='bn3')(X)
     X = Dense(128, kernel_initializer='he_uniform', name='fc4')(X)
     X = Activation('relu')(X)
-    X = BatchNormalization(name='bn4')(X)
-    X = Dense(256, kernel_initializer='he_uniform', name='fc5')(X)
-    X = Activation('relu')(X)
-    X = BatchNormalization(name='bn5')(X)
-    X = Dense(256, kernel_initializer='he_uniform', name='fc6')(X)
-    X = Activation('relu')(X)
-    X = BatchNormalization(name='bn6')(X)
     X = Dense(4, activation='softmax', kernel_initializer='he_uniform', name='output')(X)
 
     model = Model(inputs=X_input, outputs=X, name='wifi')
