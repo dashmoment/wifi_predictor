@@ -66,12 +66,14 @@ test_raw = test_raw.drop(err_col, axis=1)
 # Use only attenuator data to split into training and testing set
 #train, label_train, test, label_test = label_gen_r.random_sample(train, label_train, fraction=0.8)
 
+
 # Combine attenuator and office data to split into training and testing set
 total = pd.concat([train, test_raw])
 label_total = pd.concat([label_train['delay_mean'], label_test_raw['delay_mean']])
 label_total = pd.DataFrame(label_total).rename(columns={'Delay-mean': 'delay_mean'})
 
 train, label_train, test, label_test = label_gen_r.random_sample(total, label_total, fraction=0.8)
+
 print(train.isnull().any())
 print(train.isnull().sum())
 
@@ -177,4 +179,4 @@ def soft_acc(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    neural_network(num_feature=10, lr=0.0005, batch_size=64, epochs=400)
+    neural_network(num_feature=10, lr=0.001, batch_size=64, epochs=300)
