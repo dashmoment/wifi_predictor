@@ -13,6 +13,7 @@ import sys
 sys.path.append("../")
 import matplotlib.pyplot as plt
 #plt.switch_backend('agg')
+import seaborn as sns
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -43,6 +44,7 @@ import train_test_config as conf
 #from feature_extraction import feature_extraction
 from feature_extraction import feature_extraction_rahul
 from feature_extraction import label_generator as label_gen
+from feature_extraction import label_generator_rahul as label_gen_r
 from model import ensemble_model 
 
 import importlib
@@ -87,7 +89,8 @@ list(train_sorted_notime)
 train_sorted_notime.isnull().any()
 test_sorted_notime.isnull().any()
 
-#plot histogram
+
+### histogram
 #pandas histogram (features)
 hist = train_sorted_notime.hist(figsize = (50, 30), xlabelsize = 15, ylabelsize = 15)
 [x.title.set_size(20) for x in hist.ravel()]
@@ -126,6 +129,7 @@ plt.xlabel('Value')
 
 
 
+### time series
 #plot time series, in one figure (features)
 train_sorted.dropna(axis=0, inplace=True)
 
@@ -167,6 +171,46 @@ for column in train_sorted.apply.log:
     plt.savefig('../analysis_result_rahul/train_sorted_log_{}.png'.format(column))
 
 
+### scatter plot
+#transform delay-mean to class
+label_train_sorted_class = label_gen_r.transform_delay2category(label_train_sorted['Delay-mean'])
+label_test_sorted_class = label_gen_r.transform_delay2category(label_test_sorted['Delay-mean'])
+
+#plot scatter plot
+sns.set(style="ticks", color_codes=True)
+label_test_sorted_class.name = 'class'
+sns.pairplot(pd.concat([test_sorted_notime.iloc[:, :6], label_test_sorted_class], axis=1),
+             hue = 'class')
+
+sns.pairplot(pd.concat([test_sorted_notime.iloc[:, 6:12], label_test_sorted_class], axis=1),
+             hue = 'class')
+
+sns.pairplot(pd.concat([test_sorted_notime.iloc[:, 12:18], label_test_sorted_class], axis=1),
+             hue = 'class')
+
+sns.pairplot(pd.concat([test_sorted_notime.iloc[:, 18:], label_test_sorted_class], axis=1),
+             hue = 'class')
+
+sns.pairplot(pd.concat([test_sorted_notime, label_test_sorted_class], axis=1),
+             hue = 'class')
+
+### timeit 
+start = timeit.default_timer()
+test_sorted_notime.apply(np.mean, axis=1)
+stop = timeit.default_timer()
+print('Time: ', stop - start)
+
+john = test_sorted_notime.values
+start = timeit.default_timer()
+john.mean(axis=1)
+stop = timeit.default_timer()
+print('Time: ', stop - start)
+
+np.apply_along_axis(lambda x: sum(-np.abs(x)*np.log(np.abs(x))), axis=1, arr=john)
+
+np.apply_along_axis(np.mean, axis=1, arr=john)
+
+##################
 #feature selection
 sum(np.argwhere(train_sorted_notime.iloc[:, 0].isnull()) == np.argwhere(label_train_sorted['Delay-mean'].isnull()))
 sum(label_train_sorted['Delay-mean'].isnull())
