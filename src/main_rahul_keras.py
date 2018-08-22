@@ -49,9 +49,9 @@ test_raw = feature_engineering.binding(test_raw)
 
 
 # Use AP only
-ap_col = [col for col in train.columns if 'AP' in col]
-train = train[ap_col]
-test_raw = test_raw[ap_col]
+#ap_col = [col for col in train.columns if 'AP' in col]
+#train = train[ap_col]
+#test_raw = test_raw[ap_col]
 
 
 # Use only attenuator data to split into training and testing set
@@ -104,9 +104,12 @@ def neural_network(num_feature=8, lr=0.0005, batch_size=64, epochs=1):
     y_train_classes_count = n / y_train_classes['class'].value_counts().sort_index(axis=0)
 
     class_weight = {}
+   
     for idx, value in enumerate(y_train_classes_count):
         class_weight[idx] = value
-
+        
+    print(class_weight)
+     
     history = wifi.fit(train_set[0], train_set[1],
                        epochs=epochs,
                        validation_split=0.2,
