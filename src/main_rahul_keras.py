@@ -52,34 +52,35 @@ with open('../data/raw_data_wo_time_sub.pkl', 'rb') as input:
 train = feature_engineering.binding(train)
 test_raw = feature_engineering.binding(test_raw)
 
-
+'''
 # Use AP columns only
 ap_col = [col for col in train.columns if 'AP' in col]
 train = train[ap_col]
 test_raw = test_raw[ap_col]
+'''
 
-
-
+'''
 # Drop error columns
 err_col = [col for col in train.columns if 'ERRORS' in col or 'ERR' in col or 'Error' in col]
 train = train.drop(err_col, axis=1)
 test_raw = test_raw.drop(err_col, axis=1)
-
-
-# Use only attenuator data to split into training and testing set
-#train, label_train, test, label_test = label_gen_r.random_sample(train, label_train, fraction=0.8)
-
-# Use only office data to split into training and testing set
-train, label_train, test, label_test = label_gen_r.random_sample(test_raw, label_test_raw, fraction=0.8)
+'''
 
 '''
+# Use only attenuator data to split into training and testing set
+train, label_train, test, label_test = label_gen_r.random_sample(train, label_train, fraction=0.8)
+
+# Use only office data to split into training and testing set
+#train, label_train, test, label_test = label_gen_r.random_sample(test_raw, label_test_raw, fraction=0.8)
+'''
+
 # Combine attenuator and office data to split into training and testing set
 total = pd.concat([train, test_raw])
 label_total = pd.concat([label_train['delay_mean'], label_test_raw['delay_mean']])
 label_total = pd.DataFrame(label_total).rename(columns={'Delay-mean': 'delay_mean'})
 
 train, label_train, test, label_test = label_gen_r.random_sample(total, label_total, fraction=0.8)
-'''
+
 
 print(train.isnull().any())
 print(train.isnull().sum())
@@ -186,4 +187,4 @@ def soft_acc(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    neural_network(num_feature=12, lr=0.0002, batch_size=32, epochs=500)
+    neural_network(num_feature=18, lr=0.0005, batch_size=64, epochs=300)
