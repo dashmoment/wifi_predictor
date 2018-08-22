@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from keras import layers
 from keras.layers import Input, Dense, Activation, BatchNormalization
 from keras.layers import Dropout, Flatten
+from keras.layers.advanced_activations import LeakyReLU
 from keras.models import Model
 from keras.utils import layer_utils
 
@@ -14,25 +15,24 @@ from keras.regularizers import l1_l2
 def nn_model(input_shape):
 
     X_input = Input(input_shape)
-    X = Dense(64, kernel_initializer='he_uniform', name='fc1')(X_input)
-    X = Activation('relu')(X)
+    X = Dense(128, kernel_initializer='he_uniform', name='fc1',
+              kernel_regularizer=l1_l2(l1=0.0001, l2=0.0001))(X_input)
+    X = LeakyReLU()(X)
     X = BatchNormalization(name='bn1')(X)
-    X = Dense(64, kernel_initializer='he_uniform', name='fc2')(X)
-    X = Activation('relu')(X)
+    X = Dense(128, kernel_initializer='he_uniform', name='fc2',
+              kernel_regularizer=l1_l2(l1=0.0001, l2=0.0001))(X)
+    X = LeakyReLU()(X)
     X = BatchNormalization(name='bn2')(X)
-    X = Dense(128, kernel_initializer='he_uniform', name='fc3')(X)
-    X = Activation('relu')(X)
+    X = Dense(256, kernel_initializer='he_uniform', name='fc3',
+              kernel_regularizer=l1_l2(l1=0.0001, l2=0.0001))(X)
+    X = LeakyReLU()(X)
     X = BatchNormalization(name='bn3')(X)
-    X = Dense(128, kernel_initializer='he_uniform', name='fc4')(X)
-    X = Activation('relu')(X)
+    X = Dense(256, kernel_initializer='he_uniform', name='fc4',
+              kernel_regularizer=l1_l2(l1=0.0001, l2=0.0001))(X)
+    X = LeakyReLU()(X)
     X = BatchNormalization(name='bn4')(X)
-    X = Dense(256, kernel_initializer='he_uniform', name='fc5')(X)
-    X = Activation('relu')(X)
-    X = BatchNormalization(name='bn5')(X)
-    X = Dense(256, kernel_initializer='he_uniform', name='fc6')(X)
-    X = Activation('relu')(X)
-    X = BatchNormalization(name='bn6')(X)
-    X = Dense(4, activation='softmax', kernel_initializer='he_uniform', name='output')(X)
+    X = Dense(4, activation='softmax', kernel_initializer='he_uniform',
+              name='output', kernel_regularizer=l1_l2(l1=0.0001, l2=0.0001))(X)
 
     model = Model(inputs=X_input, outputs=X, name='wifi')
 
