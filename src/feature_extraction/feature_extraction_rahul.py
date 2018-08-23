@@ -69,8 +69,24 @@ class feature_extraction:
         df.drop('Delay-max', axis=1, inplace=True)
         
         return label
-
-    def generator(self, coll_prefix, time_step, special_list = [], embed_model_path = ""):
+    
+    def cut_location(self, case_length, time_step = 10):
+        
+        # === a function to record the interval of data used to compute average ===
+        # list to record output
+        interval = []
+        
+        max_int = case_length//time_step
+        for pos in np.arange(max_int):  # position
+            interval.append(np.arange(pos*10, pos*10+10))
+        
+        if case_length % time_step != 0:
+            interval.append(np.arange(max_int*10, case_length))
+        # the last sample
+        
+        return interval
+    
+    def generator(self, coll_prefix, time_step = 10, special_list = [], embed_model_path = ""):
             
             # ==== Create proper format for machine learning
 
@@ -96,10 +112,12 @@ class feature_extraction:
                     for i in range(56): 
                         ProcMLData[dev+'-SS_Subval-mean-'+str(i)] = []
             
-            for idx in range(len(fdata)-time_step):   
+            interval = self.cut_location(len(fdata), time_step = time_step)
+            
+            for idx in interval:   
 
                 isNull = False         
-                current = fdata[idx : idx + time_step] #Get current time step data
+                current = list(fdata[i] for i in idx) #Get current time step data
 
                 SS_Subval_tmp = {}
                 features_tmp = {}
@@ -143,11 +161,11 @@ class feature_extraction:
                         #if k == 'Time':
                         #    continue
                         if len(ProcMLData[k]) != stadard_len:
-                            raise Exception('Length error:{},{}, {}, {}'.format(idx, k, stadard_len, len(ProcMLData[k])))
+                            raise Exception('Length error:{},{}, {}, {}'.format(idx[0], k, stadard_len, len(ProcMLData[k])))
                         else:
                             continue
                 #ProcMLData['Time'].append(fdata[idx]['Time'])
-                TimeRecord['Time'].append(fdata[idx]['Time'])
+                TimeRecord['Time'].append(fdata[idx[0]]['Time'])
              
             df = pd.DataFrame(ProcMLData)
             TimeRecord = pd.DataFrame(TimeRecord)

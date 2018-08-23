@@ -13,15 +13,15 @@ import sys
 sys.path.append("../")
 import matplotlib.pyplot as plt
 #plt.switch_backend('agg')
-import seaborn as sns
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import pickle
 from datetime import datetime
 
-
 from feature_extraction import feature_engineering
+from feature_extraction import label_generator_rahul as label_gen_r
+
 
 from sklearn import metrics
 from sklearn import linear_model
@@ -101,7 +101,7 @@ hist = train_sorted_notime.apply(lambda x: np.log(x+0.00001)).hist(figsize = (50
 plt.savefig('../analysis_result_rahul/train_sorted_log_pdhist.png')
 
 
-#subplot, in one figure (features)
+#seaborn histogram (subplot in one figure) on features (train+test)
 plt.style.use('seaborn-deep')
     
 num = 0
@@ -119,7 +119,97 @@ plt.show()
 plt.savefig('../analysis_result_rahul/train_test_sorted_hist.png')
 
 
-#labels
+#seaborn histogram (subplot in one figure) on features (train, combine AP & STA)
+num = 0
+plt.figure(figsize=(40,20))
+for idx in range(6):
+    num += 1
+    plt.subplot(3, 2, num)
+    plt.hist([train_sorted_notime.iloc[:,idx], train_sorted_notime.iloc[:,idx+6]], label=['AP','STA'], normed=True)
+    plt.legend(loc='upper right', prop={'size': 12})
+    plt.title(train_sorted_notime.columns[idx][3:], fontsize=20)
+    plt.ylabel('Frequency', fontsize=18)
+    plt.xlabel('Value', fontsize=18)
+
+plt.show()
+plt.savefig('../analysis_result_rahul/train_test_sorted_hist.png')
+
+    
+#seaborn histogram (subplot in one figure) on subvalue (train, combine AP & STA)
+train.dropna(axis=0, inplace=True)
+test.dropna(axis=0, inplace=True)
+
+subap = [col for col in train.columns if 'SS_Subval' in col and 'AP' in col]
+substa = [col for col in train.columns if 'SS_Subval' in col and 'STA' in col]
+
+train[subap].hist(figsize = (50, 30))
+train[substa].hist(figsize = (50, 30))
+
+#or
+num = 0
+plt.figure(figsize=(70,40))
+for idx in range(56):
+    num += 1
+    plt.subplot(8, 7, num)
+    plt.hist([train[subap].iloc[:,idx], train[substa].iloc[:,idx]], label=['AP','STA'])
+    plt.legend(loc='upper right', prop={'size': 8})
+    plt.title(train[subap].columns[idx][3:], fontsize=12)
+    plt.ylabel('Frequency', fontsize=10)
+    plt.xlabel('Value', fontsize=10)
+
+#56 subcarriers in one figure (AP)
+plt.figure(figsize=(60,40))
+plt.hist([train[subap].iloc[:,0]], label=train[subap].columns[0])
+for idx in range(1, 56):
+    plt.hist([train[subap].iloc[:,idx]], label=train[subap].columns[idx])
+plt.legend(loc='upper right', prop={'size': 20})
+plt.title('Sub-value', fontsize=20)
+plt.ylabel('Frequency', fontsize=18)
+plt.xlabel('Value', fontsize=18)
+    
+#56 subcarriers in one figure (STA)
+plt.figure(figsize=(60,40))
+plt.hist([train[substa].iloc[:,0]], label=train[substa].columns[0])
+for idx in range(1, 56):
+    plt.hist([train[substa].iloc[:,idx]], label=train[substa].columns[idx])
+plt.legend(loc='upper right', prop={'size': 20})
+plt.title('Sub-value', fontsize=20)
+plt.ylabel('Frequency', fontsize=18)
+plt.xlabel('Value', fontsize=18)
+
+
+#seaborn histogram (subplot in one figure) on generated features (train+test)
+sub = [col for col in train_sorted_notime.columns if 'Sub' in col]
+
+num = 0
+plt.figure(figsize=(45,30))
+for idx in range(len(subap)):
+    num += 1
+    plt.subplot(3, 2, num)
+    plt.hist([train_sorted_notime[subap[idx]], train_sorted_notime[substa[idx]]], label=['AP','STA'], normed=True)
+    plt.legend(loc='upper right', prop={'size': 12})
+    plt.title(subap[idx][3:], fontsize=20)
+    plt.ylabel('Frequency', fontsize=18)
+    plt.xlabel('Value', fontsize=18)
+
+
+#seaborn histogram (subplot in one figure) on generated features (train, combine AP & STA)
+subap = [col for col in train_sorted_notime.columns if 'Sub' in col and 'AP' in col]
+substa = [col for col in train_sorted_notime.columns if 'Sub' in col and 'STA' in col]
+
+num = 0
+plt.figure(figsize=(45,30))
+for idx in range(len(subap)):
+    num += 1
+    plt.subplot(3, 2, num)
+    plt.hist([train_sorted_notime[subap[idx]], train_sorted_notime[substa[idx]]], label=['AP','STA'], normed=True)
+    plt.legend(loc='upper right', prop={'size': 12})
+    plt.title(subap[idx][3:], fontsize=20)
+    plt.ylabel('Frequency', fontsize=18)
+    plt.xlabel('Value', fontsize=18)
+
+
+#labels (train+test)
 plt.figure()
 plt.hist([label_train_sorted['Delay-mean'], label_test_sorted['Delay-mean']], bins=20, normed=True)
 plt.legend(loc='upper right', labels=['train','test'])
@@ -127,10 +217,33 @@ plt.title('Delay-mean')
 plt.ylabel('Frequency')
 plt.xlabel('Value')
 
+#labels (train)
+plt.figure()
+plt.hist(label_train_sorted['Delay-mean'], bins=20, normed=True)
+plt.title('Delay-mean')
+plt.ylabel('Frequency')
+plt.xlabel('Value')
+
+#transformed labels (train+test)
+label_train_sorted_class = label_gen_r.transform_delay2category(label_train_sorted['Delay-mean'])
+
+plt.figure()
+plt.hist(label_train_sorted_class.astype('category'))
+plt.ylabel('Frequency', fontsize=12)
+plt.xlabel('Value', fontsize=12)
+
+label_train_sorted_class.astype('category')
+label_train_sorted_class.value_counts().plot(kind='bar')
+
+sns.countplot(label_train_sorted_class.astype('category'))
+plt.xlabel('class')
+
+#transformed labels (train)
+
 
 
 ### time series
-#plot time series, in one figure (features)
+#time series (subplot in one figure) on features (train+test)
 train_sorted.dropna(axis=0, inplace=True)
 
 num = 0
@@ -145,6 +258,22 @@ for column in train_sorted_notime:
     plt.ylabel('Value')
     plt.xlabel('Time')
 
+
+#time series (subplot in one figure) on features (train, combine AT & STA)
+train_sorted.dropna(axis=0, inplace=True)
+
+num = 0
+plt.figure(figsize=(40,20))
+for idx in range(6):
+    num += 1
+    plt.subplot(3, 2, num)
+    plt.plot(train_sorted['Time'], train_sorted_notime.iloc[:,idx])
+    plt.plot(train_sorted['Time'], train_sorted_notime.iloc[:,idx+6])
+    plt.legend(loc='upper right', labels=['AP', 'STA'], prop={'size': 12})
+    plt.title(train_sorted_notime.columns[idx][3:], fontsize=20)
+    plt.ylabel('Value', fontsize=18)
+    plt.xlabel('Time', fontsize=18)
+    
 
 #labels
 plt.figure()
