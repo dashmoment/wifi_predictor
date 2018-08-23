@@ -41,13 +41,15 @@ from datetime import datetime
 
 ROOT_DIR = path.dirname(path.abspath(__file__))
 
-with open('../data/raw_data_wo_time_sub.pkl', 'rb') as input:
+with open('../data/raw_data_w_time_sub.pkl', 'rb') as input:
 
     train = pickle.load(input)
     label_train = pickle.load(input)
     test_raw = pickle.load(input)
     label_test_raw = pickle.load(input)
 
+train, label_train = label_gen_r.sort_by_time(train, label_train)
+test_raw, label_test_raw = label_gen_r.sort_by_time(test_raw, label_test_raw)
 
 train = feature_engineering.binding(train)
 test_raw = feature_engineering.binding(test_raw)
@@ -68,10 +70,11 @@ test_raw = test_raw.drop(err_col, axis=1)
 
 
 # Use only attenuator data to split into training and testing set
-#train, label_train, test, label_test = label_gen_r.random_sample(train, label_train, fraction=0.8)
+train, label_train, test, label_test = label_gen_r.random_sample_conti(train, label_train, fraction=0.8)
 
 # Use only office data to split into training and testing set
-train, label_train, test, label_test = label_gen_r.random_sample(test_raw, label_test_raw, fraction=0.8)
+#train, label_train, test, label_test = label_gen_r.random_sample(test_raw, label_test_raw, fraction=0.8)
+
 
 
 '''
