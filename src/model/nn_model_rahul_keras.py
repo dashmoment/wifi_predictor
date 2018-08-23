@@ -46,3 +46,4 @@ def nn_model(input_shape):
     model = Model(inputs=X_input, outputs=X, name='wifi')
 
     return model
+'''
