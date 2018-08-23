@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from datetime import datetime
 
 
 def transform_delay2category(delay):
@@ -14,7 +15,6 @@ def transform_delay2category(delay):
     return delay_cat
 
 
-
 def transfer_to_one_hot_class(delay):
 
     delay = pd.DataFrame(delay)
@@ -26,21 +26,56 @@ def transfer_to_one_hot_class(delay):
     return delay_cat
 
 
-
 def random_sample(inputs, label_inputs, fraction=0.8):
-    
+
     total = pd.DataFrame(inputs)
     label_total = pd.DataFrame(label_inputs)
 
     train = total.sample(frac=fraction)
     sample_idx = train.index
     label_train = label_total.iloc[sample_idx]
-    
+
     test = total[~total.index.isin(sample_idx)]
     label_test = label_total[~total.index.isin(sample_idx)]
-    
+
     return train, label_train, test, label_test
 
+
+def random_sample_conti(inputs, label_inputs, fraction=0.8):
+
+    total = pd.DataFrame(inputs)
+    label_total = pd.DataFrame(label_inputs)
+
+    num_sample = int(total.shape[0]*fraction)-1
+    cut_start = int(np.random.choice(np.arange(num_sample), 1))
+    cut_end = cut_start + int(total.shape[0]*(1-fraction))
+
+    test = total.iloc[cut_start:cut_end, :]
+    sample_idx = test.index
+    label_test = label_total.iloc[sample_idx]
+
+    train = total[~total.index.isin(sample_idx)]
+    label_train = label_total[~total.index.isin(sample_idx)]
+
+    return train, label_train, test, label_test
+
+
+def sort_by_time(data, label_data):
+
+    data = pd.DataFrame(data)
+    data.Time = data.Time.apply(lambda x: datetime.strptime(x, '%Y/%m/%d %H:%M:%S:%f'))
+
+    data_sorted = data.sort_values(by='Time').reset_index()
+    data_sorted_notime = data_sorted.drop(['index', 'Time'], axis=1)
+    data_sorted_notime.dropna(axis=0, inplace=True)
+
+    label_data['delay_mean'].Time = label_data['delay_mean'].Time.apply(
+        lambda x: datetime.strptime(x, '%Y/%m/%d %H:%M:%S:%f'))
+    label_data_sorted = label_data['delay_mean'].sort_values(by='Time').reset_index()
+    label_data_sorted.columns = ['index', 'Time', 'delay_mean']
+    label_data_sorted.dropna(axis=0, inplace=True)
+
+    return data_sorted_notime, label_data_sorted
 
 
 def weighted_random_sample(inputs, label_inputs, fraction=0.8):
