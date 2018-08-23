@@ -59,6 +59,13 @@ with open('../data/raw_data_w_time_sub.pkl', 'rb') as input:
     test = pickle.load(input)
     label_test = pickle.load(input)
 
+with open('../data/raw_data_cut_w_time_sub.pkl', 'rb') as input:
+
+    train = pickle.load(input)
+    label_train = pickle.load(input)
+    test = pickle.load(input)
+    label_test = pickle.load(input)
+
 ### feature engineering: generate features based on SS-subvalue
 train = feature_engineering.binding(train)
 test = feature_engineering.binding(test)
@@ -72,7 +79,9 @@ label_train_sorted = label_train['delay_mean'].sort_values(by = 'Time').reset_in
 train_sorted_notime = train_sorted.drop(['index', 'Time'], axis=1)
 
 train_sorted_notime.dropna(axis=0, inplace=True)
+train_sorted_notime.reset_index(drop=True, inplace=True)
 label_train_sorted.dropna(axis=0, inplace=True)
+label_train_sorted.reset_index(drop=True, inplace=True)
 
 test.Time = test.Time.apply(lambda x: datetime.strptime(x, '%Y/%m/%d %H:%M:%S:%f'))
 test_sorted = test.sort_values(by = 'Time').reset_index()
