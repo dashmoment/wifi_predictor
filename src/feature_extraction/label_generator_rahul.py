@@ -68,12 +68,14 @@ def sort_by_time(data, label_data):
     data_sorted = data.sort_values(by='Time').reset_index()
     data_sorted_notime = data_sorted.drop(['index', 'Time'], axis=1)
     data_sorted_notime.dropna(axis=0, inplace=True)
+    data_sorted_notime.reset_index(drop=True, inplace=True)
 
     label_data['delay_mean'].Time = label_data['delay_mean'].Time.apply(
         lambda x: datetime.strptime(x, '%Y/%m/%d %H:%M:%S:%f'))
     label_data_sorted = label_data['delay_mean'].sort_values(by='Time').reset_index()
     label_data_sorted.columns = ['index', 'Time', 'delay_mean']
     label_data_sorted.dropna(axis=0, inplace=True)
+    label_data_sorted.reset_index(drop=True, inplace=True)
 
     return data_sorted_notime, label_data_sorted
 
