@@ -13,6 +13,7 @@ from keras.models import Model
 from sklearn.feature_selection import SelectKBest, f_regression
 import pickle
 from sklearn.manifold import TSNE
+from keras.models import model_from_json
 
 from utility import save_load_Keras, plot_tSNE, keras_event_callBack
 import train_test_config as conf
@@ -57,9 +58,16 @@ if __name__ == '__main__':
     
     encoded_feature = encoder_model.predict(train_AP_SS)
     
+    
+    skipgram_model = save_load_Keras.load_model('../../trained_model/skip_gram_enc/graph.json',
+                                               '../../trained_model/skip_gram_enc/weight.h5')  
+    skipgram_model.summary()
+    skipgram_model_enc = Model(inputs=skipgram_model.get_layer('input_3').input,outputs=skipgram_model.get_layer('dense_3').get_output_at(0))
+    skipgram_model_enc.summary()
+    skipgram_model_enc_feature = skipgram_model_enc.predict(train_AP_SS)
     #Plot encoded feature - class
-#    tsne_plotter = plot_tSNE.plot_tSNE(2000, encoded_feature,label_train_dm)
-#    tsne_plotter.plot()
+    tsne_plotter = plot_tSNE.plot_tSNE(2000, skipgram_model_enc_feature,label_train_dm)
+    tsne_plotter.plot()
 
         
     #Test Accuracy
@@ -92,11 +100,20 @@ if __name__ == '__main__':
 #    tsne_plotter.plot()
     
     
-    #Concat encode features + original features
-    encoded_feature_df_colsName = ['AP_SS_encode_'+str(i) for i in range(32)] 
-    encoded_feature_df = pd.DataFrame(encoded_feature, columns=encoded_feature_df_colsName, dtype=np.float32) 
-    #train = pd.concat([train_leagacy, encoded_feature_df], axis=1)
-    train = train_leagacy
+#    #Concat encode features + original features
+#    encoded_feature_df_colsName = ['AP_SS_encode_'+str(i) for i in range(32)] 
+#    encoded_feature_df = pd.DataFrame(encoded_feature, columns=encoded_feature_df_colsName, dtype=np.float32) 
+#    #train = pd.concat([train_leagacy, encoded_feature_df], axis=1)
+#    train = train_leagacy
+#    anova_filter = SelectKBest(f_regression, k=10).fit(train, label_train['delay_mean'])
+#    mask = anova_filter.get_support(indices=True)
+#    print('Selected features: {}'.format(train.columns[mask]))
+    
+    #Concat skp-gram encode features + original features
+    encoded_feature_df_colsName = ['AP_SS_encode_'+str(i) for i in range(28)] 
+    encoded_feature_df = pd.DataFrame(skipgram_model_enc_feature, columns=encoded_feature_df_colsName, dtype=np.float32) 
+    train = pd.concat([train_leagacy, encoded_feature_df], axis=1)
+    #train = train_leagacy
     anova_filter = SelectKBest(f_regression, k=10).fit(train, label_train['delay_mean'])
     mask = anova_filter.get_support(indices=True)
     print('Selected features: {}'.format(train.columns[mask]))
@@ -117,7 +134,20 @@ if __name__ == '__main__':
     adam = keras.optimizers.Adam(lr=0.0005, epsilon=1e-8)
     rahul_model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
     
-    savePath_root =  '../../trained_model/nn_model_rahul_wo_enc/'
+    savePath_root =  '../../trained_model/nn_model_rahul_skipgram/'
+    
+    if os.path.exists(savePath_root):
+        
+        print(" Load Trained Model")
+        json_file = open(os.path.join(savePath_root, 'graph.json'), 'r')
+        loaded_model_json = json_file.read()
+        json_file.close()
+        model = model_from_json(loaded_model_json)
+        model.load_weights(os.path.join(savePath_root, 'weight.h5'))
+          
+    else:
+        print("Model not exist. Build new model")
+        os.mkdir(savePath_root)
     
     saveModel_cb = keras_event_callBack.saveModel_Callback(
                                                             10,
