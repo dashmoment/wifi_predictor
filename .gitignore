@@ -9,7 +9,7 @@ __pycache__/
 #Customized
 data/
 trained_model/
-src/saved_models
+src/saved_models/*
 # Distribution / packaging
 .Python
 env/
