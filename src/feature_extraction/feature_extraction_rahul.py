@@ -80,9 +80,8 @@ class feature_extraction:
         for pos in np.arange(max_int):  # position
             interval.append(np.arange(pos*10, pos*10+10))
         
-        if case_length % time_step != 0:
+        if case_length % time_step != 0: # the last sample
             interval.append(np.arange(max_int*10, case_length))
-        # the last sample
         
         return interval
     
