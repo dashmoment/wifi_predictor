@@ -178,7 +178,7 @@ class feature_extraction:
                             #if k == 'Time':
                             #    continue
                             if len(ProcMLData[k]) != stadard_len:
-                                raise Exception('Length error:{},{}, {}, {}'.format(idx[0], k, stadard_len, len(ProcMLData[k])))
+                                raise Exception('Length error:{},{}, {}, {}'.format(idx, k, stadard_len, len(ProcMLData[k])))
                             else:
                                 continue
                     #ProcMLData['Time'].append(fdata[idx]['Time'])
@@ -193,7 +193,7 @@ class feature_extraction:
             if 'SS_Subval' in special_list and embed_model_path != "":
                 
                 signal_embedding = run_signal_embedding.signal_embeding(embed_model_path)
-                embeded_signal = signal_embedding.predict(df)
+                embeded_signal = signal_embedding.predict(train)
                 
                 #spike_cols = [col for col in MLdf.columns if 'SS_Subval' in col]
                 #MLdf.drop(spike_cols, axis=1, inplace=True) 
@@ -256,8 +256,7 @@ class feature_extraction:
                             #if k == 'Time':
                             #    continue
                             if len(ProcMLData[k]) != stadard_len:
-                                raise Exception('Length error:{},{}, {}, {}'.format(
-                                    idx[0], k, stadard_len, len(ProcMLData[k])))
+                                raise Exception('Length error:{},{}, {}, {}'.format(idx, k, stadard_len, len(ProcMLData[k])))
                             else:
                                 continue
                     #ProcMLData['Time'].append(fdata[idx]['Time'])
@@ -272,7 +271,7 @@ class feature_extraction:
             if 'SS_Subval' in special_list and embed_model_path != "":
 
                 signal_embedding = run_signal_embedding.signal_embeding(embed_model_path)
-                embeded_signal = signal_embedding.predict(df)
+                embeded_signal = signal_embedding.predict(train)
 
                 #spike_cols = [col for col in MLdf.columns if 'SS_Subval' in col]
                 #MLdf.drop(spike_cols, axis=1, inplace=True)
