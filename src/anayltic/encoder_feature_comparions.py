@@ -57,7 +57,7 @@ if __name__ == '__main__':
     encoder_model.summary()
     
     encoded_feature = encoder_model.predict(train_AP_SS)
-    tsne_plotter = plot_tSNE.plot_tSNE(5000, train_AP_SS,label_train_dm)
+    tsne_plotter = plot_tSNE.plot_tSNE(2000, train_AP_SS,label_train_dm)
     tsne_plotter.plot()
     
     

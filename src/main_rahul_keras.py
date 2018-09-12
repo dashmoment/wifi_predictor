@@ -1,7 +1,7 @@
-import sys
-sys.path.append("../")
 import matplotlib.pyplot as plt
 # plt.switch_backend('agg')
+import pickle
+from datetime import datetime
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -27,10 +27,9 @@ from feature_extraction import label_generator_rahul as label_gen_r
 from feature_extraction import feature_engineering
 from model.nn_model_rahul_keras import nn_model
 from utility import io
+import train_test_config as conf
 
-import pickle
-import importlib
-from datetime import datetime
+
 
 # importlib.reload(nn_model_rahul)
 # importlib.reload(feature_extraction_rahul)
