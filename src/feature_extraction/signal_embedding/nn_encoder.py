@@ -1,5 +1,6 @@
 import sys
 sys.path.append("../")
+sys.path.append("../../")
 import matplotlib.pyplot as plt
 # plt.switch_backend('agg')
 import pickle

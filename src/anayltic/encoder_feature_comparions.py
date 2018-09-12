@@ -57,6 +57,8 @@ if __name__ == '__main__':
     encoder_model.summary()
     
     encoded_feature = encoder_model.predict(train_AP_SS)
+    tsne_plotter = plot_tSNE.plot_tSNE(5000, train_AP_SS,label_train_dm)
+    tsne_plotter.plot()
     
     
     skipgram_model = save_load_Keras.load_model('../../trained_model/skip_gram_enc/graph.json',
@@ -100,23 +102,23 @@ if __name__ == '__main__':
 #    tsne_plotter.plot()
     
     
-#    #Concat encode features + original features
-#    encoded_feature_df_colsName = ['AP_SS_encode_'+str(i) for i in range(32)] 
-#    encoded_feature_df = pd.DataFrame(encoded_feature, columns=encoded_feature_df_colsName, dtype=np.float32) 
-#    #train = pd.concat([train_leagacy, encoded_feature_df], axis=1)
-#    train = train_leagacy
-#    anova_filter = SelectKBest(f_regression, k=10).fit(train, label_train['delay_mean'])
-#    mask = anova_filter.get_support(indices=True)
-#    print('Selected features: {}'.format(train.columns[mask]))
-    
-    #Concat skp-gram encode features + original features
-    encoded_feature_df_colsName = ['AP_SS_encode_'+str(i) for i in range(28)] 
-    encoded_feature_df = pd.DataFrame(skipgram_model_enc_feature, columns=encoded_feature_df_colsName, dtype=np.float32) 
+    #Concat encode features + original features
+    encoded_feature_df_colsName = ['AP_SS_encode_'+str(i) for i in range(32)] 
+    encoded_feature_df = pd.DataFrame(encoded_feature, columns=encoded_feature_df_colsName, dtype=np.float32) 
     train = pd.concat([train_leagacy, encoded_feature_df], axis=1)
     #train = train_leagacy
     anova_filter = SelectKBest(f_regression, k=10).fit(train, label_train['delay_mean'])
     mask = anova_filter.get_support(indices=True)
     print('Selected features: {}'.format(train.columns[mask]))
+    
+    #Concat skp-gram encode features + original features
+#    encoded_feature_df_colsName = ['AP_SS_encode_'+str(i) for i in range(28)] 
+#    encoded_feature_df = pd.DataFrame(skipgram_model_enc_feature, columns=encoded_feature_df_colsName, dtype=np.float32) 
+#    train = pd.concat([train_leagacy, encoded_feature_df], axis=1)
+#    #train = train_leagacy
+#    anova_filter = SelectKBest(f_regression, k=10).fit(train, label_train['delay_mean'])
+#    mask = anova_filter.get_support(indices=True)
+#    print('Selected features: {}'.format(train.columns[mask]))
     
     train = train.sample(frac=1.0)    
     label_train_shuffle = label_train['delay_mean'].iloc[train.index]
@@ -134,7 +136,7 @@ if __name__ == '__main__':
     adam = keras.optimizers.Adam(lr=0.0005, epsilon=1e-8)
     rahul_model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
     
-    savePath_root =  '../../trained_model/nn_model_rahul_skipgram/'
+    savePath_root =  '../../trained_model/nn_model_rahul_encode_v2/'
     
     if os.path.exists(savePath_root):
         
