@@ -10,6 +10,7 @@ __pycache__/
 data/
 trained_model/
 src/saved_models/focal_loss/
+analysis_result_rahul/
 # Distribution / packaging
 .Python
 env/
