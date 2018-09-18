@@ -60,16 +60,18 @@ def random_sample_conti(inputs, label_inputs, fraction=0.8):
     return train, label_train, test, label_test
 
 
-def sort_by_time(data, label_data):
-
-    data = pd.DataFrame(data)
+def sort_by_time(raw_data, raw_label_data):
+    
+    temp = pd.DataFrame(raw_data)
+    data = temp.copy(deep=True)
     data.Time = data.Time.apply(lambda x: datetime.strptime(x, '%Y/%m/%d %H:%M:%S:%f'))
 
     data_sorted = data.sort_values(by='Time').reset_index()
     data_sorted_notime = data_sorted.drop(['index', 'Time'], axis=1)
     data_sorted_notime.dropna(axis=0, inplace=True)
     data_sorted_notime.reset_index(drop=True, inplace=True)
-
+    
+    label_data = raw_label_data.copy()
     label_data['delay_mean'].Time = label_data['delay_mean'].Time.apply(
         lambda x: datetime.strptime(x, '%Y/%m/%d %H:%M:%S:%f'))
     label_data_sorted = label_data['delay_mean'].sort_values(by='Time').reset_index()
