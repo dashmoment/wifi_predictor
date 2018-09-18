@@ -18,10 +18,11 @@ import pandas as pd
 import seaborn as sns
 import pickle
 from datetime import datetime
+from mpl_toolkits.mplot3d import Axes3D
 
 from feature_extraction import feature_engineering
 from feature_extraction import label_generator_rahul as label_gen_r
-
+from feature_extraction import split_dataset
 
 from sklearn import metrics
 from sklearn import linear_model
@@ -66,6 +67,25 @@ with open('../data/raw_data_cut_w_time_sub.pkl', 'rb') as input:
     test = pickle.load(input)
     label_test = pickle.load(input)
 
+### Sample + MA
+with open('../data/raw_data_sample_ma_w_time_sub.pkl', 'rb') as input:
+
+    train = pickle.load(input)
+    label_train = pickle.load(input)
+    test = pickle.load(input)
+    label_test = pickle.load(input)
+    train_off = pickle.load(input)
+    label_train_off = pickle.load(input)
+    test_off = pickle.load(input)
+    label_test_off = pickle.load(input)
+
+train, label_train, test, label_test, test_raw, label_test_raw = split_dataset.split_dataset('attenuator')
+    
+train = feature_engineering.binding(train)
+test = feature_engineering.binding(test)
+test_raw = feature_engineering.binding(test_raw)
+
+
 ### feature engineering: generate features based on SS-subvalue
 train = feature_engineering.binding(train)
 test = feature_engineering.binding(test)
@@ -90,7 +110,9 @@ label_test_sorted = label_test['delay_mean'].sort_values(by = 'Time').reset_inde
 test_sorted_notime = test_sorted.drop(['index', 'Time'], axis=1)
 
 test_sorted_notime.dropna(axis=0, inplace=True)
+test_sorted_notime.reset_index(drop=True, inplace=True)
 label_test_sorted.dropna(axis=0, inplace=True)
+label_test_sorted.reset_index(drop=True, inplace=True)
 
 
 ### data exploration
@@ -316,21 +338,95 @@ label_test_sorted_class = label_gen_r.transform_delay2category(label_test_sorted
 
 #plot scatter plot
 sns.set(style="ticks", color_codes=True)
+
+#train (quite big figure, running speed is slow)
+label_train_sorted_class.name = 'class'
+sns.pairplot(pd.concat([train_sorted_notime, label_train_sorted_class], axis=1),
+             hue='class', diag_kind='kde', size=10)
+
+#test
 label_test_sorted_class.name = 'class'
 sns.pairplot(pd.concat([test_sorted_notime.iloc[:, :6], label_test_sorted_class], axis=1),
              hue = 'class')
-
 sns.pairplot(pd.concat([test_sorted_notime.iloc[:, 6:12], label_test_sorted_class], axis=1),
              hue = 'class')
-
 sns.pairplot(pd.concat([test_sorted_notime.iloc[:, 12:18], label_test_sorted_class], axis=1),
              hue = 'class')
-
 sns.pairplot(pd.concat([test_sorted_notime.iloc[:, 18:], label_test_sorted_class], axis=1),
              hue = 'class')
-
 sns.pairplot(pd.concat([test_sorted_notime, label_test_sorted_class], axis=1),
              hue = 'class')
+
+#selected features
+sns.pairplot(x_vars=['AP-Rcv-mean', 'AP-SS_Rssi-mean'], y_vars=['STA-Rcv-mean', 'STA-SS_Rssi-mean'], size=5,
+             data=pd.concat([train_sorted_notime, label_train_sorted_class], axis=1), hue='class')
+sns.pairplot(x_vars=['AP-CCK_ERRORS-mean', 'AP-CRC-ERR-mean'], y_vars=['STA-Rcv-mean', 'STA-SS_Rssi-mean'], size=5,
+             data=pd.concat([train_sorted_notime, label_train_sorted_class], axis=1), hue='class')
+
+sns.pairplot(x_vars=['AP-Rcv-mean'], y_vars=['AP-Sub-Var','AP-Sub-Mean','AP-Sub-Shannon','AP-Sub-Max','AP-Sub-Min','AP-Sub-Max-min'],
+             size=5, data=pd.concat([train_sorted_notime, label_train_sorted_class], axis=1), hue='class')
+sns.pairplot(x_vars=['AP-Rcv-mean'], y_vars=['STA-Sub-Var','STA-Sub-Mean','STA-Sub-Shannon','STA-Sub-Max','STA-Sub-Min','STA-Sub-Max-min'],
+             size=5, data=pd.concat([train_sorted_notime, label_train_sorted_class], axis=1), hue='class')
+sns.pairplot(x_vars=['AP-Rcv-mean'], y_vars=['AP-CCK_ERRORS-mean','AP-CRC-ERR-mean','AP-FCSError-mean','AP-OFDM_ERRORS-mean'],
+             size=5, data=pd.concat([train_sorted_notime, label_train_sorted_class], axis=1), hue='class')
+sns.pairplot(x_vars=['AP-Rcv-mean'], y_vars=['STA-CCK_ERRORS-mean','STA-CRC-ERR-mean','STA-FCSError-mean','STA-OFDM_ERRORS-mean'],
+             size=5, data=pd.concat([train_sorted_notime, label_train_sorted_class], axis=1), hue='class')
+
+
+sns.pairplot(x_vars=['AP-FCSError-mean','AP-Rcv-mean','AP-SS_Rssi-mean'], 
+             y_vars=['AP-FCSError-mean','AP-Rcv-mean','AP-SS_Rssi-mean'], size=5, diag_kind='kde',
+             data=pd.concat([train_sorted_notime, label_train_sorted_class], axis=1), hue='class')
+
+#3d scatter plot
+#transfer class to color index
+color = label_train_sorted_class.copy().as_matrix().astype('object')
+color[color==0] = 'blue'
+color[color==1] = 'green'
+color[color==2] = 'red'
+color[color==3] = 'purple'
+
+def plot3d(x,y,z,color):    
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    ax.scatter(train_sorted_notime[x], train_sorted_notime[y], train_sorted_notime[z], c=color)
+    ax.set_xlabel(x)
+    ax.set_ylabel(y)
+    ax.set_zlabel(z)
+    ax.legend()
+    plt.draw()
+
+plot3d('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-CCK_ERRORS-mean', color)
+plot3d('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-CRC-ERR-mean', color)
+plot3d('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-FCSError-mean', color)
+plot3d('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-OFDM_ERRORS-mean', color)
+plot3d('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-Sub-Var', color)
+plot3d('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-Sub-Mean', color)
+plot3d('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-Sub-Shannon', color)
+plot3d('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-Sub-Max', color)
+plot3d('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-Sub-Min', color)
+plot3d('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-Sub-Max-min', color)
+
+def plot3d1(x,y,z,color):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.scatter(train_sorted_notime[x], train_sorted_notime[y], train_sorted_notime[z], c=color)
+    ax.set_xlabel(x)
+    ax.set_ylabel(y)
+    ax.set_zlabel(z)
+    ax.legend([0,1,2,3], ['blue', 'green', 'red', 'purple'])
+    plt.draw()
+plot3d1('AP-Rcv-mean', 'AP-SS_Rssi-mean', 'AP-Sub-Max-min', color)
+    
+
+#rotation
+for angle in range(0, 360, 30):
+    ax.view_init(30, angle)
+    plt.show()
+    
+
+Axes3D.scatter(train_sorted_notime['AP-Rcv-mean'], train_sorted_notime['AP-SS_Rssi-mean'], train_sorted_notime['AP-CCK_ERRORS-mean'],
+               c=label_train_sorted_class)
+
 
 ### timeit 
 start = timeit.default_timer()
@@ -347,7 +443,6 @@ print('Time: ', stop - start)
 np.apply_along_axis(lambda x: sum(-np.abs(x)*np.log(np.abs(x))), axis=1, arr=john)
 
 np.apply_along_axis(np.mean, axis=1, arr=john)
-
 ##################
 #feature selection
 sum(np.argwhere(train_sorted_notime.iloc[:, 0].isnull()) == np.argwhere(label_train_sorted['Delay-mean'].isnull()))

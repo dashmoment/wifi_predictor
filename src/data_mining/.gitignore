@@ -3,3 +3,5 @@ path_test.py
 plot_data.py
 save_data.py
 save_data_test.py
+data_mining_local.py
+data_mining_randma.py
