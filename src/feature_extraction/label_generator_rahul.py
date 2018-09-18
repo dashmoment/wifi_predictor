@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
-
+import copy
 
 def transform_delay2category(delay):
 
@@ -71,7 +71,7 @@ def sort_by_time(raw_data, raw_label_data):
     data_sorted_notime.dropna(axis=0, inplace=True)
     data_sorted_notime.reset_index(drop=True, inplace=True)
     
-    label_data = raw_label_data.copy()
+    label_data = copy.deepcopy(raw_label_data)
     label_data['delay_mean'].Time = label_data['delay_mean'].Time.apply(
         lambda x: datetime.strptime(x, '%Y/%m/%d %H:%M:%S:%f'))
     label_data_sorted = label_data['delay_mean'].sort_values(by='Time').reset_index()
